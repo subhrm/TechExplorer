@@ -10,7 +10,7 @@ var log = logmodule.log;
 const INFO = logmodule.INFO_LOG;
 const DEBUG = logmodule.DEBUG_LOG;
 
-var _validuser;
+var _validuser = false;
 
 var AppStore = objectAssign({}, BaseStore, {
 
