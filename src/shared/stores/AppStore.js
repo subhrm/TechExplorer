@@ -1,9 +1,14 @@
 var objectAssign = require('object-assign');
 
+var BaseStore = require('./BaseStore');
 var AppDispatcher = require('../dispatcher/dispatcher').AppDispatcher;
 var AppConstants = require('../constants/AppConstants');
+
 var AjaxHelper=require('./../Helper/AjaxHelper.js');
-var BaseStore = require('./BaseStore');
+var logmodule = require("./../Helper/log.js");
+var log = logmodule.log;
+const INFO = logmodule.INFO_LOG;
+const DEBUG = logmodule.DEBUG_LOG;
 
 var _validuser;
 
@@ -15,7 +20,7 @@ var AppStore = objectAssign({}, BaseStore, {
 
     _getUser:function(){
         var user = sessionStorage.getItem("username");
-        //console.log("getUser : user from sessionstorage is : " + user );
+        log("getUser : user from sessionstorage is : " + user , INFO);
         if(user == ""){
             return ("NA");
         }else{
@@ -48,17 +53,17 @@ var AppStore = objectAssign({}, BaseStore, {
 // Function used to register the new user from Signup Screen
 function Signup(userobj){
 
-    //console.log("Inside fn-Signup");
-    //console.log(userobj);
+    log("Inside fn-Signup", DEBUG);
+    log(JSON.stringify(userobj), DEBUG);
     _UserSaved = false;
 
     // AJAX Call to the server to save the user in DB
     var data = AjaxHelper.signup("/signup", userobj);
     if(data.status == "success"){
-        console.log("Data Saved Successfully");
+        log("Signup : Data Saved Successfully", INFO);
         _UserSaved = true;
     }else{
-        console.log("Unable to save the data to DB");
+        log("Signup : Unable to save the data to DB", INFO);
         _UserSaved = false;
     }
 
@@ -66,21 +71,21 @@ function Signup(userobj){
 
 // Function used for validating the User credentials from Login Screen
 function ValidateCredentials(userobj){
-    //console.log("Inside fn-ValidateCredentials");  
-    //console.log(userobj);
+    log("Inside fn-ValidateCredentials", DEBUG);  
+    log(JSON.stringify(userobj), DEBUG);
     _validuser = false;
     sessionStorage.removeItem("username");
 
     if(userobj.email == "" || userobj.password == ""){
-        console.log("Invalid user");
+        log("ValidateCredentials : Invalid user", INFO);
     }
     else{
         var data=AjaxHelper.login("/login",userobj);
-        console.log("returned from Ajax Helper");
-        console.log(data);
+        log("returned from Ajax Helper", DEBUG);
+        log(JSON.stringify(data), DEBUG);
         if(data && data.username ){
-            console.log("Valid user");
-            //console.log("Setting session username as : " + userobj.email);
+            log("ValidateCredentials : Valid user", INFO);
+            log("Setting session username as : " + userobj.email, DEBUG);
             sessionStorage.setItem("username",userobj.email);
             _validuser = true;
         }
