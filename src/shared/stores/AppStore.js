@@ -11,11 +11,21 @@ const INFO = logmodule.INFO_LOG;
 const DEBUG = logmodule.DEBUG_LOG;
 
 var _validuser = false;
+var _UserSaved = false;
+var _UniqueEmail = true;
 
 var AppStore = objectAssign({}, BaseStore, {
 
     isAuthenticated:function(){
         return _validuser;        
+    },
+
+    isUserSaved:function(){
+        return _UserSaved;
+    },
+
+    isUniqEmail:function(){
+        return _UniqueEmail;
     },
 
     _getUser:function(){
@@ -30,6 +40,11 @@ var AppStore = objectAssign({}, BaseStore, {
 
     dispatchToken: AppDispatcher.register(function(action){
         switch(action.type){
+
+            case AppConstants.CHECKEMAIL:
+                CheckEmail(action.data);
+                AppStore.emitChange();
+                break;
 
             case AppConstants.SIGNUP:
                 Signup(action.data);
@@ -49,6 +64,33 @@ var AppStore = objectAssign({}, BaseStore, {
     })
 });
 
+// Function to validate the uniqueness of email id for signup
+function CheckEmail(emailobj){
+
+    log("Inside fn-CheckEmail", DEBUG);
+    log(JSON.stringify(emailobj), DEBUG);
+
+    _UniqueEmail = false;
+    if(emailobj.email == ""){
+        log("Invalid Email ID to check ", DEBUG);
+    }
+    else{
+        // AJAX Call to the server API to check the uniqueness of email ID
+//DEPENDENCY
+/*        
+        var data = AjaxHelper.checkemail("/checkemail", useremail);
+        log("returned from Ajax Helper", DEBUG);
+        log(JSON.stringify(data), DEBUG);
+        if(data && data.exists)  {
+            log("Email is already taken", INFO);
+        }else{
+            log("Email is available", INFO);
+            _UniqueEmail = true;
+        }
+*/        
+_UniqueEmail = true;
+    }
+}
 
 // Function used to register the new user from Signup Screen
 function Signup(userobj){
@@ -57,7 +99,9 @@ function Signup(userobj){
     log(JSON.stringify(userobj), DEBUG);
     _UserSaved = false;
 
-    // AJAX Call to the server to save the user in DB
+    // AJAX Call to the server API to save the user in DB
+//DEPENDENCY
+/*    
     var data = AjaxHelper.signup("/signup", userobj);
     if(data.status == "success"){
         log("Signup : Data Saved Successfully", INFO);
@@ -66,6 +110,8 @@ function Signup(userobj){
         log("Signup : Unable to save the data to DB", INFO);
         _UserSaved = false;
     }
+*/
+_UserSaved = true;
 
 }
 
@@ -80,6 +126,9 @@ function ValidateCredentials(userobj){
         log("ValidateCredentials : Invalid user", INFO);
     }
     else{
+        // CALL API for login
+// DEPENDENCY
+/*        
         var data=AjaxHelper.login("/login",userobj);
         log("returned from Ajax Helper", DEBUG);
         log(JSON.stringify(data), DEBUG);
@@ -89,13 +138,19 @@ function ValidateCredentials(userobj){
             sessionStorage.setItem("username",userobj.email);
             _validuser = true;
         }
+*/        
+_validuser = true;
     }
 }
 
 // Function to handler logout functionality
 function Logout(){
     sessionStorage.clear();
-
+        // CALL API for logout if you want to do something on server side for logout action
+// DEPENDENCY
+/*
+*/
+_validuser = false;
 }
 
 module.exports=AppStore;

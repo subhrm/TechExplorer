@@ -7,6 +7,13 @@ const INFO = logmodule.INFO_LOG;
 const DEBUG = logmodule.DEBUG_LOG;
 
 module.exports={
+  ChkEmail:function(data){
+    Dispatcher.dispatch({
+      type:AppConstants.CHECKEMAIL,
+      data:data
+    });    
+  },
+
   Signup : function(data){
     Dispatcher.dispatch({
       type : AppConstants.SIGNUP,
