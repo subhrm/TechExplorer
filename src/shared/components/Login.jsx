@@ -97,10 +97,10 @@ class Login extends React.Component{
 
 		if(this.state.validuser){
             log("Valid User", DEBUG);
-            log("Navigating to the Home Page", DEBUG);
+            log("Navigating to the user watchlist Page", DEBUG);
 
-            // Navigate to home page programmatically
-            this.props.history.push('/');			
+            // Navigate to user watchlist page programmatically
+            this.props.history.push('/watchlist');			
 		}
 		else{
 			log("Invalid Credentials", DEBUG);

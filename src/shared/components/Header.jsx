@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import { Image, Button, Grid, Row, Col, Navbar, NavItem, Nav, Glyphicon } from 'react-bootstrap';
+import { LinkContainer } from "react-router-bootstrap";
 
 import AppStore from '../stores/AppStore.js';
 var logmodule = require("./../Helper/log.js");
@@ -12,8 +13,6 @@ const styleobj = {
 	headerline : {
 		width : '100%',
 		borderBottom : '1px solid lightgrey',
-		position : 'fixed',
-		top : '0px',
 		boxShadow : '1px 1px lightgrey',
 	},
 	title : {
@@ -44,6 +43,12 @@ const styleobj = {
 						padding: '10px',
 						display: 'inline-block',
 						lineHeight: '20px'
+				},
+
+	subheader : {
+					border : '1px solid lightgrey',
+					boxShadow : '1px 1px lightgrey',
+					margin : '0px'
 				}
 };
 
@@ -53,10 +58,12 @@ class Header extends React.Component{
 		super(props);
 
 		this.state = {
-						validUser : false
+						validUser : false,
+						activeKey : 0
 					};
 		this._onChange = this._onChange.bind(this);
 		this.fnGetDataFromStore = this.fnGetDataFromStore.bind(this);
+		this.handleSelect = this.handleSelect.bind(this);
 	}
 
 	// Register with App store on component mount
@@ -82,11 +89,20 @@ class Header extends React.Component{
 		this.setState(this.state);
 	}
 
+	// Function to handle the Nav Selection
+	handleSelect(selectedKey) {
+		this.state.activeKey = selectedKey;
+		this.setState(this.state);
+	}
+
 	render(){
 
 		var self = this;
 		var hdr_buttons = [];
 		var subheader = [];
+		var akey;
+
+		console.log(akey);
 		if(this.state.validUser){
 
 			// Push the Logout button to the btn array
@@ -98,35 +114,26 @@ class Header extends React.Component{
 
 			// Push the nav bar to the subheader
 			subheader.push(
-			<div id="subheader" key="subheader">
-			<Navbar justified inverse collapseOnSelect style={{ margin : '0px 20px'}}>            
-            	<Navbar.Header>
-					<Navbar.Toggle />
-            	</Navbar.Header>
-				<Navbar.Collapse>
-					<Nav>                 
-						<NavItem style={styleobj.stylenavbarnav} componentClass="span">
-							<Link to="/">
-								<Glyphicon glyph="home" style={styleobj.style_navglyph}/>My WatchList
-							</Link>
+			<div id="subheader" key="subheader" style={styleobj.subheader}>
+				<Nav bsStyle="pills" justified onSelect={k => this.handleSelect(k)}>                 
+					<LinkContainer to="/watchlist" active={!(this.state.activeKey > 0)}>
+						<NavItem eventKey="1">						
+							<Glyphicon glyph="home" style={styleobj.style_navglyph}/>My WatchList
 						</NavItem>
-						<NavItem style={styleobj.stylenavbarnav} componentClass="span">
-							<Link to="/watchlist">
-								<Glyphicon glyph="log-in" style={styleobj.style_navglyph}/>Other Events
-							</Link>                                    
+					</LinkContainer>
+					<LinkContainer to="/userevents">
+						<NavItem eventKey="2">
+							<Glyphicon glyph="log-in" style={styleobj.style_navglyph}/>Other Events            
 						</NavItem>
-						<NavItem style={styleobj.stylenavbarnav} componentClass="span">
-							<Link to="/signup">
-								<Glyphicon glyph="user" style={styleobj.style_navglyph}/>Profile
-							</Link>
+					</LinkContainer>  
+					<LinkContainer to="/profile">
+						<NavItem eventKey="3">
+							<Glyphicon glyph="user" style={styleobj.style_navglyph}/>Profile
 						</NavItem>
-					</Nav>         
-				</Navbar.Collapse>                
-        	</Navbar>
+					</LinkContainer>
+				</Nav>         
 			</div>
 			);
-				
-
 		}else{
 			// Push the Login button to the btn array
 			hdr_buttons.push(
@@ -151,11 +158,7 @@ class Header extends React.Component{
 					</Row>
 				</Grid>			
 			</div>			
-
-			<div style={{height : '100px'}}>
-				&nbsp;
-			</div>
-
+			{subheader}			
 			<br/><br/>			
 		</div>
 		);
