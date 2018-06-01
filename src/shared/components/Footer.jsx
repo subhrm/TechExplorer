@@ -42,16 +42,19 @@ class Footer extends React.Component{
     	
 	render(){
 		return(
-			<div id="div_footer" style={styleobj.style_footer}>
-                <Grid style={styleobj.style_grid}>
-                    <Row>
-                        <Col xsHidden sm={12}>
-                            <p style={styleobj.style_footer2}> Infosys - STGPW &nbsp;&nbsp;|&nbsp;&nbsp;  Makeathon Event &nbsp;&nbsp;|&nbsp;&nbsp; Tech Explorer by CharMinar Team</p>
-                        </Col>
-                    </Row>
-                </Grid>                
-				<p style={styleobj.style_footer1}>Copyright &copy; 2018 Infosys Limited - All rights reserved</p>
-			</div>
+            <div>
+                <br/><br/><br/><br/><br/><br/>
+                <div id="div_footer" style={styleobj.style_footer}>
+                    <Grid style={styleobj.style_grid}>
+                        <Row>
+                            <Col xsHidden sm={12}>
+                                <p style={styleobj.style_footer2}> Infosys - STGPW &nbsp;&nbsp;|&nbsp;&nbsp;  Makeathon Event &nbsp;&nbsp;|&nbsp;&nbsp; Tech Explorer by CharMinar Team</p>
+                            </Col>
+                        </Row>
+                    </Grid>                
+                    <p style={styleobj.style_footer1}>Copyright &copy; 2018 Infosys Limited - All rights reserved</p>
+                </div>
+            </div>
 		);
 	}
 }

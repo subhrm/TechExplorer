@@ -1,7 +1,7 @@
 import React from 'react';
 import { Panel, Grid, Row, Col } from 'react-bootstrap';
 
-class UserEvents extends React.Component{
+class BrowseEvents extends React.Component{
 
     constructor(props){
         super(props);
@@ -9,16 +9,16 @@ class UserEvents extends React.Component{
 
     render(){
         return(
-            <div id="div_UserEvents">
+            <div id="div_BrowseEvents">
         <Grid>
             <Row>
                 <Col sm={4} smOffset={4}>
                     <Panel>
                         <Panel.Heading>
-                            <Panel.Title>{"UserEvents"}</Panel.Title>
+                            <Panel.Title>{"BrowseEvents"}</Panel.Title>
                         </Panel.Heading>
                         <Panel.Body>
-                            {"UserEvents Component for the Application."}
+                            {"BrowseEvents Component for the Application."}
                         </Panel.Body>
                     </Panel>                
                 </Col>
@@ -29,4 +29,4 @@ class UserEvents extends React.Component{
     }
 }
 
-export default UserEvents;
+export default BrowseEvents;

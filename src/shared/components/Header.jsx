@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-import { Image, Button, Grid, Row, Col, Navbar, NavItem, Nav, Glyphicon } from 'react-bootstrap';
+import { DropdownButton, MenuItem, Image, Button, Grid, Row, Col, NavItem, Nav, Glyphicon, Form, InputGroup, FormGroup, FormControl } from 'react-bootstrap';
 import { LinkContainer } from "react-router-bootstrap";
 
 import AppStore from '../stores/AppStore.js';
@@ -30,26 +30,42 @@ const styleobj = {
 		widtht : 'auto'
 	},
 
-	btn : {
+	login : {
 		textAlign : 'right',
 		verticalAlign : 'middle',
-		margin : '0px 20px',
-		display : 'inline-block'
+		margin : '20px 20px',
+	},
+	logout : {
+		textAlign : 'right',
+		verticalAlign : 'middle',
+		margin : '20px 20px',
 	},
 
 	style_navglyph : {'margin' : '3px'},
 
-	stylenavbarnav: {
-						padding: '10px',
-						display: 'inline-block',
-						lineHeight: '20px'
-				},
+	style_glyph_logout : {
+							fontSize : '175%', 
+							marginRight : '5px', 
+						},
+	style_glyph_logout1 : {
+							margin : '5px', 
+							padding : '5px',
+							fontSize : '175%', 
+							border : '1px solid black',
+							borderRadius : '5px'
+						},						
 
 	subheader : {
 					border : '1px solid lightgrey',
 					boxShadow : '1px 1px lightgrey',
 					margin : '0px'
-				}
+				},
+
+	searchbar : {
+		textAlign : 'center',
+		verticalAlign : 'middle',
+		margin : '20px 20px',		
+	}
 };
 
 class Header extends React.Component{
@@ -59,11 +75,15 @@ class Header extends React.Component{
 
 		this.state = {
 						validUser : false,
-						activeKey : 0
+						activeKey : 0,
+						searchinput : ""
 					};
 		this._onChange = this._onChange.bind(this);
 		this.fnGetDataFromStore = this.fnGetDataFromStore.bind(this);
 		this.handleSelect = this.handleSelect.bind(this);
+		this.fnClickSearch = this.fnClickSearch.bind(this);
+        this.handleInptChange = this.handleInptChange.bind(this);		
+
 	}
 
 	// Register with App store on component mount
@@ -95,6 +115,15 @@ class Header extends React.Component{
 		this.setState(this.state);
 	}
 
+    fnClickSearch(){
+        log("Clicked on Search box : " + JSON.stringify(this.state.searchinput ), DEBUG);
+    }
+
+	// Function to handle the input changes on the search form control
+	handleInptChange(event) {
+        this.setState({[event.target.name]: event.target.value});
+	}    
+	
 	render(){
 
 		var self = this;
@@ -102,57 +131,93 @@ class Header extends React.Component{
 		var subheader = [];
 		var akey;
 
-		console.log(akey);
 		if(this.state.validUser){
 
-			// Push the Logout button to the btn array
+			// Push the Logout button to the btn array			
+/*			
 			hdr_buttons.push(
-				<Link to="/logout" key="logout">
-					<Button key="logout" bsStyle="primary">Logout</Button>
-				</Link>
+				<div style={styleobj.logout}  key="logout">
+					<Link to="/logout">
+						<Button key="logout" bsStyle="primary">Logout</Button>
+					</Link>
+				</div>
 			);
+*/
+			hdr_buttons.push(
+				<div style={styleobj.logout}  key="logout">
+					<DropdownButton
+						title={<Glyphicon glyph="user" style={styleobj.style_glyph_logout}/>}
+						pullRight
+						id="dropdown_profile"
+					>
+						<LinkContainer to="/profile">
+							<MenuItem>Profile</MenuItem>
+						</LinkContainer>										
+						<LinkContainer to="/logout">
+							<MenuItem>Logout</MenuItem>
+						</LinkContainer>						
+					</DropdownButton>
+				</div>
+			);	
 
 			// Push the nav bar to the subheader
 			subheader.push(
 			<div id="subheader" key="subheader" style={styleobj.subheader}>
-				<Nav bsStyle="pills" justified onSelect={k => this.handleSelect(k)}>                 
+				<Nav bsStyle="pills" onSelect={k => this.handleSelect(k)}>                 
 					<LinkContainer to="/watchlist" active={!(this.state.activeKey > 0)}>
 						<NavItem eventKey="1">						
 							<Glyphicon glyph="home" style={styleobj.style_navglyph}/>My WatchList
 						</NavItem>
 					</LinkContainer>
-					<LinkContainer to="/userevents">
+					<LinkContainer to="/browseevents">
 						<NavItem eventKey="2">
-							<Glyphicon glyph="log-in" style={styleobj.style_navglyph}/>Other Events            
+							<Glyphicon glyph="log-in" style={styleobj.style_navglyph}/>Browse Events            
 						</NavItem>
 					</LinkContainer>  
-					<LinkContainer to="/profile">
-						<NavItem eventKey="3">
-							<Glyphicon glyph="user" style={styleobj.style_navglyph}/>Profile
-						</NavItem>
-					</LinkContainer>
 				</Nav>         
 			</div>
 			);
 		}else{
 			// Push the Login button to the btn array
+			
 			hdr_buttons.push(
-				<Link to="/login" key="login">
-					<Button key="login" bsStyle="primary">Login</Button>
-				</Link>
-			);
+				<div style={styleobj.login} key="login">
+					<Link to="/login">
+						<Button key="login" bsStyle="primary">Login</Button>
+					</Link>
+				</div>
+			);		
 		}
 
 		return(
 		<div id="div_header">
 			<div style={styleobj.headerline}>
 				<Grid style={{margin : '0px', padding : '0px', width : '100%'}}>
-					<Row>
-						<Col xs={9} sm={11} style={{textAlign : 'left', margin : '0px', padding : '0px 0px 0px 20px'}}>
+					<Row style={{margin : '0px', padding : '0px', width : '100%'}}>
+						<Col xs={9} sm={4} style={{textAlign : 'left', margin : '0px', padding : '0px 0px'}}>
 							<Image src="images/titleicon.jpg" thumbnail style={styleobj.img}/>			
 							<h3 style={styleobj.title}>Tech Explorer</h3>
 						</Col>
-						<Col xs={3} sm={1} style={{ margin :'0px', padding:'10px 1px'}} id="header_btn">
+						<Col xsHidden sm={6} style={{textAlign:'left', margin :'0px', padding:'0px 0px'}}>
+							<div style={styleobj.searchbar}>
+								<Form>
+									<FormGroup>
+									<InputGroup style={{'width' : '350px'}}>   
+										<FormControl type="text" ref="searchval" placeholder="Search Event" 
+											name="searchinput" 
+											onChange={this.handleInptChange} 
+											value={this.state.searchinput || ""}/>										
+										<InputGroup.Addon onClick={()=>{ self.fnClickSearch()}} style={{'cursor' : 'pointer'}}>
+											<Link to="/searchresults">
+												<Glyphicon glyph="search" style={styleobj.style_navglyph}/>
+											</Link>	
+										</InputGroup.Addon>										
+									</InputGroup>									
+									</FormGroup>
+								</Form>										
+							</div>
+						</Col>						
+						<Col xs={3} sm={2} style={{textAlign:'right', margin :'0px', padding:'0px 0px'}}>
 							{hdr_buttons}
 						</Col>
 					</Row>

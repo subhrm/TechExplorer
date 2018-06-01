@@ -9,7 +9,7 @@ import Signup from './components/Signup.jsx';
 import Logout from './components/Logout.jsx';
 import WatchList from './components/WatchList.jsx';
 import Profile from './components/Profile.jsx';
-import UserEvents from './components/UserEvents.jsx';
+import BrowseEvents from './components/BrowseEvents.jsx';
 
 var Routes = [
     {
@@ -44,8 +44,8 @@ var Routes = [
     },
 
     {
-        path : '/userevents',
-        component : UserEvents
+        path : '/browseevents',
+        component : BrowseEvents
     }    
 ];
 
