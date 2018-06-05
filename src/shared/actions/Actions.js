@@ -35,18 +35,10 @@ module.exports={
     });
   },
 
-  FetchEvents:function(){
-    Dispatcher.dispatch({
-      type:AppConstants.FETCHEVENTS,
-      data:""
-    })
-  },
-
-  FetchEventsByTech:function(data){
-    Dispatcher.dispatch({
-      type:AppConstants.EVENTSBYTECH,
-      data:data
-    })
-  },
-
+  SaveProfile:function(data){
+      Dispatcher.dispatch({
+        type:AppConstants.SAVEPROFILE,
+        data:data
+    });  
+  }
 }

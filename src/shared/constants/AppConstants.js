@@ -3,7 +3,6 @@ module.exports={
     SIGNUP : "SIGNUP",
     LOGIN : "LOGIN",
     LOGOUT : "LOGOUT",
-    FETCHEVENTS : "FETCHEVENTS", //retrieve initial event list
-    FETCHEVENTSBYTECH: "FETCHEVENTSBYTECH"
+    SAVEPROFILE : "SAVEPROFILE"
   };
   
