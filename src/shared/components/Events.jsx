@@ -1,5 +1,5 @@
 import React from 'react';
-import { Panel, Grid, Row, Col } from 'react-bootstrap';
+import { Panel, Grid, Row, Col, Glyphicon } from 'react-bootstrap';
 
 const styleobj = {
     style_border : {
@@ -13,6 +13,10 @@ const styleobj = {
 
     border : {
         border: '1px solid black',
+    },
+
+    style_glyph : {
+        padding: '5px'
     }
 };
 
@@ -36,7 +40,14 @@ class Events extends React.Component{
                     <div style={styleobj.style_col}>
                     <br/>
                         <p>{this.props.edesc}</p>
-                        <p>{this.props.edate}</p>
+                        <p>
+                            <Glyphicon glyph="calendar" style={styleobj.style_glyph}/>
+                            {this.props.edate}
+                        </p>
+                        <p>
+                            <Glyphicon glyph="map-marker" style={styleobj.style_glyph}/>
+                            {this.props.eloc}
+                        </p>
                     </div>
                 </div>
         );

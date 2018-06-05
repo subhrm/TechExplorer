@@ -13,7 +13,7 @@ const DEBUG = logmodule.DEBUG_LOG;
 var _validuser = false;
 var _UserSaved = false;
 var _UniqueEmail = true;
-var _userobj = null;
+var _events = [];
 
 var AppStore = objectAssign({}, BaseStore, {
 
@@ -32,11 +32,15 @@ var AppStore = objectAssign({}, BaseStore, {
     _getUser:function(){
         var user = sessionStorage.getItem("username");
         log("getUser : user from sessionstorage is : " + user , INFO);
-        return(user);
+        if(user == ""){
+            return ("NA");
+        }else{
+            return (user);
+        }
     },
 
-    _getUserObj:function(){
-        return _userobj;
+    _getEvents:function(){
+        return _events;
     },
 
     dispatchToken: AppDispatcher.register(function(action){
@@ -62,10 +66,15 @@ var AppStore = objectAssign({}, BaseStore, {
                 AppStore.emitChange();
                 break;
 
-            case  AppConstants.SAVEPROFILE:
-                SaveProfile(action.data);
+            case AppConstants.FETCHEVENTS:
+                FetchEvents();
                 AppStore.emitChange();
-                break;                
+                break;
+
+            case AppConstants.FETCHEVENTSBYTECH:
+                FetchEventsByTech();
+                AppStore.emitChange();
+                break;
         }
     })
 });
@@ -146,19 +155,11 @@ function ValidateCredentials(userobj){
         }
 */        
 _validuser = true;
-sessionStorage.setItem("username","ramana@infosys.com");
-_userobj = {
-                username : "Ramana",
-                email : "ramana@infosys.com",
-                phone : "99122",
-                password : "ram@123"
-        };
     }
 }
 
 // Function to handler logout functionality
 function Logout(){
-    log("Inside the function Logout", DEBUG);
     sessionStorage.clear();
         // CALL API for logout if you want to do something on server side for logout action
 // DEPENDENCY
@@ -167,15 +168,34 @@ function Logout(){
 _validuser = false;
 }
 
-// Function to save the user profile
-function SaveProfile(data){
-    log("Inside the function SaveProfile", DEBUG);
-    // CALL API to save the user profile to DB
-// DEPENDENCY
-/*
-
+// Function to retrieve events
+function FetchEvents(){
+    log("Inside fn-FetchEvents",DEBUG);
+    // DEPENDENCY
+/*      adding /events in SPEC to fetch initial list of events, categories, and technology from Server 
+        var data=AjaxHelper.fetch("/events");
+        log("returned from Ajax Helper", DEBUG);
+        log(JSON.stringify(data), DEBUG);
+        if(data){
+            log("Events : data", INFO);
+            _events = data
+        }
 */
-    _userobj = data;
+
+// Function to retrieve events by TECHNOLOGY
+function FetchEventsByTech(techobj){
+    log("Inside fn-FetchEventsByTechnology",DEBUG);
+    // DEPENDENCY
+/*      
+        var data=AjaxHelper.fetch("/event/by-technology/{techobj.id}?start=0&page-size=size");
+        log("returned from Ajax Helper", DEBUG);
+        log(JSON.stringify(data), DEBUG);
+        if(data){
+            log("Events : data", INFO);
+            _events = data
+        }
+*/}
+
 }
 
 module.exports=AppStore;
