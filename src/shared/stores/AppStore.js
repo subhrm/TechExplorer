@@ -13,6 +13,7 @@ const DEBUG = logmodule.DEBUG_LOG;
 var _validuser = false;
 var _UserSaved = false;
 var _UniqueEmail = true;
+var _userobj = null;
 
 var AppStore = objectAssign({}, BaseStore, {
 
@@ -31,11 +32,11 @@ var AppStore = objectAssign({}, BaseStore, {
     _getUser:function(){
         var user = sessionStorage.getItem("username");
         log("getUser : user from sessionstorage is : " + user , INFO);
-        if(user == ""){
-            return ("NA");
-        }else{
-            return (user);
-        }
+        return(user);
+    },
+
+    _getUserObj:function(){
+        return _userobj;
     },
 
     dispatchToken: AppDispatcher.register(function(action){
@@ -60,6 +61,11 @@ var AppStore = objectAssign({}, BaseStore, {
                 Logout();
                 AppStore.emitChange();
                 break;
+
+            case  AppConstants.SAVEPROFILE:
+                SaveProfile(action.data);
+                AppStore.emitChange();
+                break;                
         }
     })
 });
@@ -140,17 +146,36 @@ function ValidateCredentials(userobj){
         }
 */        
 _validuser = true;
+sessionStorage.setItem("username","ramana@infosys.com");
+_userobj = {
+                username : "Ramana",
+                email : "ramana@infosys.com",
+                phone : "99122",
+                password : "ram@123"
+        };
     }
 }
 
 // Function to handler logout functionality
 function Logout(){
+    log("Inside the function Logout", DEBUG);
     sessionStorage.clear();
         // CALL API for logout if you want to do something on server side for logout action
 // DEPENDENCY
 /*
 */
 _validuser = false;
+}
+
+// Function to save the user profile
+function SaveProfile(data){
+    log("Inside the function SaveProfile", DEBUG);
+    // CALL API to save the user profile to DB
+// DEPENDENCY
+/*
+
+*/
+    _userobj = data;
 }
 
 module.exports=AppStore;

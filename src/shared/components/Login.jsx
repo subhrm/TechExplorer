@@ -13,6 +13,7 @@ const DEBUG = logmodule.DEBUG_LOG;
 const styleobj = {
 					error : {'textAlign' : 'center', 'color':'red'},
 					helpblock : {'textAlign' : 'center', 'color' : 'blue'},
+					panelfooter : {'textAlign' : 'center', 'color' : 'grey'},
                     panel : { textAlign :'center'},
                     link : {textDecoration : 'underline', fontWeight : 'bold', 'cursor' : 'pointer'}
 				};
@@ -170,7 +171,16 @@ class Login extends React.Component{
 								{"Sign in"}
 							</Button>
 						</Form>
-					</Panel.Body>					
+					</Panel.Body>	
+					<Panel.Footer>
+						<p style={styleobj.panelfooter}>
+							New User? &nbsp;
+							<em style={styleobj.link}
+								onClick={()=>{this.props.history.push('/signup')}}>
+								Signup Here
+							</em>
+						</p>						
+					</Panel.Footer>				
 				</Panel>
 
 				{ !this.state.validuser && this.state.submitted
@@ -179,12 +189,11 @@ class Login extends React.Component{
                 }
                 
 				<HelpBlock style={styleobj.helpblock}>
-					New User ? &nbsp;
+					Click Here to go back to &nbsp;
                     <em style={styleobj.link}
-                        onClick={()=>{this.props.history.push('/signup')}}>
-                        Click Here
-                    </em> 
-                    &nbsp; to Signup
+                        onClick={()=>{this.props.history.push('/')}}>
+                        Home Page
+                    </em>
 				</HelpBlock>
 
 			</Col>

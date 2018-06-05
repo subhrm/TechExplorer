@@ -1,30 +1,270 @@
 import React from 'react';
-import { Panel, Grid, Row, Col } from 'react-bootstrap';
+import { Grid, Row, Col, Panel } from 'react-bootstrap';
+import { Form, FormControl, FormGroup, InputGroup, ControlLabel, Button, Glyphicon, DropdownButton, MenuItem} from 'react-bootstrap';
+
+import Actions from '../actions/Actions.js';
+import AppStore from '../stores/AppStore.js';
+
+var logmodule = require("./../Helper/log.js");
+var log = logmodule.log;
+const INFO = logmodule.INFO_LOG;
+const DEBUG = logmodule.DEBUG_LOG;
+
+const styleobj = {
+    button : {'textAlign' : 'center', 'margin' : '5px'},
+    left : {'textAlign' : 'left'},
+    h3blue : {'color' : 'darkblue', padding : '5px 25px'},
+    topborder : {'margin' : '10px 0px', 'borderTop' : '1px lightgrey solid' },
+
+    center : {'textAlign' : 'center'},
+    error : {'textAlign' : 'center', 'color':'red'},
+    para : {'textAlign' : 'center', 'color':'grey'},
+
+    helpblock : {'textAlign' : 'center', 'color' : 'blue'},
+};
 
 class Profile extends React.Component{
 
     constructor(props){
         super(props);
+
+        this._onChange = this._onChange.bind(this);
+        this.handleInptChange = this.handleInptChange.bind(this);
+        this.fnGetDataFromStore = this.fnGetDataFromStore.bind(this);
+        this.fnresetform = this.fnresetform.bind(this);
+        this.fnSaveChanges = this.fnSaveChanges.bind(this);
+        this.fnremoveitem = this.fnremoveitem.bind(this);
+        this.handleselect = this.handleselect.bind(this);
+
+        this.state = {
+                        username : "",
+                        email : "",
+                        phone : "",
+                        password : "",
+                        search : "",
+                        categories : [],
+                        allcategories : []
+                    };
     }
 
+	// Function to handle the change event from the store
+	_onChange(){
+        log("Profile Component received change event from App store", DEBUG);
+        this.fnGetDataFromStore();        
+    }
+
+    // Function to get the data from the store
+    fnGetDataFromStore(){
+        var obj = AppStore._getUserObj();
+        //var categories = AppStore._getCategories();
+        var categories = ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS"];
+        var allcategories = ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS", "node JS", "React Native", "Spring", "Hadoop"];
+
+        log(JSON.stringify(obj), DEBUG);
+        if(obj){
+            this.state.username = obj.username;
+            this.state.email = obj.email;
+            this.state.phone = obj.phone;
+            this.state.password = obj.password;
+        }
+        this.state.categories = categories;
+        this.state.allcategories = allcategories;
+        this.setState(this.state);
+    }
+        
+	// Register with App store on component mount
+	componentDidMount(){
+        AppStore.addChangeListener(this._onChange);	
+        this.fnGetDataFromStore();
+	}
+
+	//De-Register with App store on component unmount
+	componentWillUnmount(){
+		AppStore.removeChangeListener(this._onChange);
+    }
+        
+	// Function to handle the input changes
+	handleInptChange(event) {
+		this.setState({[event.target.name]: event.target.value});
+    }
+
+    // Function to reset the form
+    fnresetform(){
+        this.fnGetDataFromStore();
+    }
+
+    // Function to save the changes
+    fnSaveChanges(){
+        var userobj = {
+                        username : this.state.username,
+                        password : this.state.password,
+                        phone : this.state.phone,
+                        email : this.state.email
+                    };
+        Actions.SaveProfile(userobj);
+    }
+
+    // Function to handle removing items from the category list
+    fnremoveitem(item){
+        log(item, DEBUG);
+        var oldlist = this.state.categories;
+        log(oldlist);
+        var newlist = oldlist.filter(( element )=>{ return( !(element == item))})
+        log(newlist);
+        this.state.categories = newlist;
+        this.setState(this.state);
+    }
+
+    // Functiont to handle the select event on the drop down
+    handleselect(element){
+        log(element);
+        this.state.categories.push(element);
+        this.setState(this.state);
+    }    
+
     render(){
+
+        var self = this;
+        var categorysection = [];
+
+        this.state.categories.map( element => {
+            categorysection.push(
+                <span key={element} style={{margin : '1px'}}>
+                        <InputGroup style={{width : 'auto'}}>
+                            <FormControl type="text" disabled value={element} 
+                                style={{cursor : 'text'}}/>
+                            <InputGroup.Addon 
+                                onClick = {() => self.fnremoveitem(element)}
+                                style={{fontWeight : 'bold', cursor :'pointer'}}>
+                                X
+                            </InputGroup.Addon>
+                        </InputGroup>
+                </span>
+            );
+        })
+
+        var selectoptions = [];
+        var allcategories = this.state.allcategories;
+        var usercategories = this.state.categories;
+        var filteredcategories = allcategories.filter( (element) => {
+            if(usercategories.indexOf(element) >= 0){
+                return false;
+            }else{
+                return true;
+            }
+        });
+    
+        filteredcategories.map( (element) => {
+            if(this.state.search == ""){
+                selectoptions.push(
+                    <MenuItem key={element} onClick={()=>self.handleselect(element)}>
+                        {element}
+                    </MenuItem>
+                );
+            }else if(element.match(this.state.search) != null){                
+                selectoptions.push(
+                    <MenuItem key={element} onClick={()=>self.handleselect(element)}>
+                        {element}
+                    </MenuItem>
+                );
+            }
+        })
+        categorysection.push(
+            <span key={"newdropdown"} style={{margin : '1px', width:'auto'}}>
+                <DropdownButton 
+                    title={<input type='text' name="search" 
+                    value = {this.state.search || ""} 
+                    onChange={this.handleInptChange}
+                    autoFocus style={{margin : '0px'}}/>}
+                    id="dropdown">
+                    {selectoptions}
+                </DropdownButton>
+            </span>
+        );        
+
         return(
-            <div id="div_Profile">
-        <Grid>
-            <Row>
-                <Col sm={4} smOffset={4}>
-                    <Panel>
-                        <Panel.Heading>
-                            <Panel.Title>{"Profile"}</Panel.Title>
-                        </Panel.Heading>
-                        <Panel.Body>
-                            {"Profile Component for the Application."}
-                        </Panel.Body>
-                    </Panel>                
-                </Col>
-            </Row>
-        </Grid>
+    <div id="div_profile">
+        <div id="div_details">
+            <h3 style={styleobj.h3blue}>
+                <Glyphicon glyph="user" style={styleobj.style_navglyph}/>
+                &nbsp; {"User Details"} &nbsp;
+            </h3>
+            <br/>        
+            <Grid>
+                <Row>
+                    <Col sm={6}>
+                        <Form horizontal>
+                            <FormGroup>
+                                <Col componentClass={ControlLabel} sm={4} htmlFor="username" style={styleobj.left}> 
+                                    {"Name : "}
+                                </Col>
+                                <Col sm={8}>
+                                    <FormControl type="text" required id="username" name="username"
+                                        onChange={this.handleInptChange} onBlur={this.handleInptBlur}
+                                        value={this.state.username || ""}>
+                                    </FormControl>
+                                </Col>
+                            </FormGroup>
+                            <FormGroup>
+                                <Col componentClass={ControlLabel} sm={4} htmlFor="password" style={styleobj.left}>
+                                    {"Password : "}
+                                </Col>
+                                <Col sm={8}>
+                                    <FormControl type="password" required id="password" name="password"
+                                        onChange={this.handleInptChange} onBlur={this.handleInptBlur} 
+                                        value={this.state.password || ""}>
+                                    </FormControl>
+                                </Col>
+                            </FormGroup>
+                            <FormGroup>
+                                <Col componentClass={ControlLabel} sm={4} htmlFor="email" style={styleobj.left}>
+                                    {"Email : "}
+                                </Col>
+                                <Col sm={8}>
+                                    <FormControl type="text" required id="email" name="email" disabled
+                                        value={this.state.email || ""}>
+                                    </FormControl>
+                                </Col>
+                            </FormGroup>
+                            <FormGroup>
+                                <Col componentClass={ControlLabel} sm={4} htmlFor="phone" style={styleobj.left}>
+                                    {"Mobile No. : "}
+                                </Col>
+                                <Col sm={8}>
+                                    <FormControl type="text" required id="phone" name="phone"
+                                        onChange={this.handleInptChange} onBlur={this.handleInptBlur} 
+                                        value={this.state.phone || ""}>
+                                    </FormControl>
+                                </Col>
+                            </FormGroup>
+                        </Form>
+                    </Col>
+                </Row>
+            </Grid>
+        </div>
+        <br/>
+        <div id="id_categories">
+            <h3 style={styleobj.h3blue}>            
+                <Glyphicon glyph="flash" style={styleobj.style_navglyph}/>
+                &nbsp; {"Interested in "} &nbsp;                
+            </h3>
+            <div style={{textAlign : 'left', margin : '20px', padding : '5px 2px', border : '1px lightgrey solid'}}>
+                <form className="form-inline">
+                    <FormGroup>
+                        {categorysection}
+                    </FormGroup>
+                </form>
             </div>
+        </div>
+        <div id="div_buttons" style={{textAlign :'center'}}>
+            <Button bsStyle="primary" onClick={this.fnSaveChanges} style={styleobj.button}>
+                {"Save Changes"}
+            </Button>
+            <Button bsStyle="primary" onClick={this.fnresetform} style={styleobj.button}> 
+                {"Cancel"}
+            </Button>
+        </div>
+    </div>
         );
     }
 }

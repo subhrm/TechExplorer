@@ -6,13 +6,13 @@
   "scripts": {
     "build": "webpack -w --mode=development",
     "start": "nodemon server.js"
-  },
+  },  
   "repository": {
     "type": "git",
     "url": "http://infygit.ad.infosys.com/charminar/TechExplorer.git"
   },
   "keywords": [
-    "TechExlorer"
+    "TechExplorer"
   ],
   "author": "CharMinar Team",
   "license": "ISC",
@@ -33,9 +33,7 @@
     "react": "^16.4.0",
     "react-bootstrap": "^0.32.1",
     "react-dom": "^16.4.0",
-    "react-router-bootstrap": "^0.24.4",
     "react-router-dom": "^4.2.2",
-    "react-select": "^1.2.1",
     "serve-favicon": "^2.5.0",
     "webpack": "^4.8.3",
     "webpack-dev-server": "^3.1.4",

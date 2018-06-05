@@ -19,7 +19,8 @@ const styleobj = {
 		verticalAlign : 'middle',
 		fontWeight : 'bold',
 		padding : '0px 10px',
-		display : 'inline-block'
+		display : 'inline-block',
+		cursor : 'pointer'
 	},
 
 	img : {
@@ -65,6 +66,10 @@ const styleobj = {
 		textAlign : 'center',
 		verticalAlign : 'middle',
 		margin : '20px 20px',		
+	},
+	drpdwntitle : {
+		fontWeight : 'bold',
+		fontSize : '105%'
 	}
 };
 
@@ -76,7 +81,8 @@ class Header extends React.Component{
 		this.state = {
 						validUser : false,
 						activeKey : 0,
-						searchinput : ""
+						searchinput : "",
+						username : ""
 					};
 		this._onChange = this._onChange.bind(this);
 		this.fnGetDataFromStore = this.fnGetDataFromStore.bind(this);
@@ -106,6 +112,7 @@ class Header extends React.Component{
 	// Function to get the data from the store
 	fnGetDataFromStore(){
 		this.state.validUser = AppStore.isAuthenticated();
+		this.state.username = AppStore._getUser();
 		this.setState(this.state);
 	}
 
@@ -150,6 +157,7 @@ class Header extends React.Component{
 						pullRight
 						id="dropdown_profile"
 					>
+						<MenuItem header style={styleobj.drpdwntitle}>{this.state.username}</MenuItem>
 						<LinkContainer to="/profile">
 							<MenuItem>Profile</MenuItem>
 						</LinkContainer>										
@@ -196,7 +204,9 @@ class Header extends React.Component{
 					<Row style={{margin : '0px', padding : '0px', width : '100%'}}>
 						<Col xs={9} sm={4} style={{textAlign : 'left', margin : '0px', padding : '0px 0px'}}>
 							<Image src="images/titleicon.jpg" thumbnail style={styleobj.img}/>			
-							<h3 style={styleobj.title}>Tech Explorer</h3>
+							<LinkContainer to="/" style={styleobj.title}>
+								<h3 style={styleobj.title}>Tech Explorer</h3>
+							</LinkContainer>
 						</Col>
 						<Col xsHidden sm={6} style={{textAlign:'left', margin :'0px', padding:'0px 0px'}}>
 							<div style={styleobj.searchbar}>

@@ -33,5 +33,12 @@ module.exports={
         type:AppConstants.LOGOUT,
         data:""
     });
+  },
+
+  SaveProfile:function(data){
+      Dispatcher.dispatch({
+        type:AppConstants.SAVEPROFILE,
+        data:data
+    });  
   }
 }

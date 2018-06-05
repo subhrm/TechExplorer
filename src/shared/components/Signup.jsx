@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Row, Col, Panel, Form, FormControl, FormGroup, ControlLabel, Button} from 'react-bootstrap';
+import { Grid, Row, Col, Panel, Form, FormControl, FormGroup, InputGroup, Glyphicon, ControlLabel, Button, HelpBlock, DropdownButton, MenuItem} from 'react-bootstrap';
 
 import Actions from '../actions/Actions.js';
 import AppStore from '../stores/AppStore.js';
@@ -15,6 +15,8 @@ const styleobj = {
     para : {'textAlign' : 'center', 'color':'grey'},
     helpblock : {'textAlign' : 'center', 'color' : 'blue'},
     panel : { textAlign :'center'},
+    panelfooter : {'textAlign' : 'center', 'color' : 'grey'},    
+    link : {textDecoration : 'underline', fontWeight : 'bold', 'cursor' : 'pointer'}
 };
 
 class Signup extends React.Component{
@@ -48,19 +50,23 @@ class Signup extends React.Component{
                                             phone : false,
                                             password : false,
                                             repassword : false
-                                        }
+                                        },
+                        search : "",
+                        categories : [],
+                        allcategories : []                                                        
                     };
 
         this.handleInptChange = this.handleInptChange.bind(this);
         this.handleInptBlur = this.handleInptBlur.bind(this);
         this.SignupHandler = this.SignupHandler.bind(this);
         this._onChange = this._onChange.bind(this);
+        this.fnGetDataFromStore = this.fnGetDataFromStore.bind(this);
+        this.fnremoveitem = this.fnremoveitem.bind(this);
+        this.handleselect = this.handleselect.bind(this);        
     }
 
-	// Function to handle the change event from the store
-	_onChange(){
-        log("Signup Component received change event from App store", INFO);
-        
+    // Function to get the data from the store
+    fnGetDataFromStore(){
         if(this.state.submitted){
             if(AppStore.isUserSaved()){
                 log("User saved to DB Successfully", DEBUG);
@@ -79,12 +85,27 @@ class Signup extends React.Component{
         }
 
         this.state.unique_email = AppStore.isUniqEmail();
-        this.setState({unique_email : this.state.unique_email});
+        this.setState({unique_email : this.state.unique_email});        
+    }    
+
+	// Function to handle the change event from the store
+	_onChange(){
+        log("Signup Component received change event from App store", INFO);
+        this.fnGetDataFromStore();              
     }
         
 	// Register with App store on component mount
 	componentDidMount(){
-		AppStore.addChangeListener(this._onChange);	
+        AppStore.addChangeListener(this._onChange);	
+
+        // Get the initial data from the AppStore
+        //var categories = AppStore._getCategories();
+        var categories = ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS"];
+        var allcategories = ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS", "node JS", "React Native", "Spring", "Hadoop"];
+
+        this.state.categories = categories;
+        this.state.allcategories = allcategories;
+        this.setState(this.state);
 	}
 
 	//De-Register with App store on component unmount
@@ -95,7 +116,25 @@ class Signup extends React.Component{
 	// Function to handle the input changes
 	handleInptChange(event) {
         this.setState({[event.target.name]: event.target.value});
-    }    
+    }   
+    
+    // Function to handle removing items from the category list
+    fnremoveitem(item){
+        log(item, DEBUG);
+        var oldlist = this.state.categories;
+        log(oldlist);
+        var newlist = oldlist.filter(( element )=>{ return( !(element == item))})
+        log(newlist);
+        this.state.categories = newlist;
+        this.setState(this.state);
+    }
+
+    // Functiont to handle the select event on the drop down
+    handleselect(element){
+        log(element);
+        this.state.categories.push(element);
+        this.setState(this.state);
+    }        
     
 	// Function to handle the input onBlur()
 	handleInptBlur(event) {
@@ -231,6 +270,65 @@ class Signup extends React.Component{
     }
 
     render(){
+
+        var self = this;
+        var categorysection = [];
+
+        this.state.categories.map( element => {
+            categorysection.push(
+                <span key={element} style={{margin : '1px'}}>
+                        <InputGroup style={{width : 'auto'}}>
+                            <FormControl type="text" disabled value={element} 
+                                style={{cursor : 'text'}}/>
+                            <InputGroup.Addon 
+                                onClick = {() => self.fnremoveitem(element)}
+                                style={{fontWeight : 'bold', cursor :'pointer'}}>
+                                X
+                            </InputGroup.Addon>
+                        </InputGroup>
+                </span>
+            );
+        })
+
+        var selectoptions = [];
+        var allcategories = this.state.allcategories;
+        var usercategories = this.state.categories;
+        var filteredcategories = allcategories.filter( (element) => {
+            if(usercategories.indexOf(element) >= 0){
+                return false;
+            }else{
+                return true;
+            }
+        });
+    
+        filteredcategories.map( (element) => {
+            if(this.state.search == ""){
+                selectoptions.push(
+                    <MenuItem key={element} onClick={()=>self.handleselect(element)}>
+                        {element}
+                    </MenuItem>
+                );
+            }else if(element.match(this.state.search) != null){                
+                selectoptions.push(
+                    <MenuItem key={element} onClick={()=>self.handleselect(element)}>
+                        {element}
+                    </MenuItem>
+                );
+            }
+        })
+        categorysection.push(
+            <span key={"newdropdown"} style={{margin : '1px', width:'auto'}}>
+                <DropdownButton 
+                    title={<input type='text' name="search" 
+                    value = {this.state.search || ""} 
+                    onChange={this.handleInptChange}
+                    autoFocus style={{margin : '0px'}}/>}
+                    id="dropdown">
+                    {selectoptions}
+                </DropdownButton>
+            </span>
+        );                
+
         return(
             <div id="div_signup">
             <br/>
@@ -339,6 +437,15 @@ class Signup extends React.Component{
                                         </FormGroup>
                                     </Form>
                                 </Panel.Body>
+                                <Panel.Footer>
+                                    <p style={styleobj.panelfooter}>
+                                        Go back to &nbsp;
+                                        <em style={styleobj.link}
+                                            onClick={()=>{this.props.history.push('/login')}}>
+                                            Login
+                                        </em>
+                                    </p>						
+                                </Panel.Footer>			                                
                             </Panel>
                             { this.state.failedsave
                                 ?  <p style={styleobj.error}> 
@@ -346,9 +453,34 @@ class Signup extends React.Component{
                                     </p> 
                                 :	<span></span>
                             }
+                            <HelpBlock style={styleobj.helpblock}>
+                                Click Here to go back to &nbsp;
+                                <em style={styleobj.link}
+                                    onClick={()=>{this.props.history.push('/')}}>
+                                    Home Page
+                                </em>
+                            </HelpBlock>                            
                         </Col>
                     </Row>
                 </Grid>
+                {
+                    this.state.isformtouched.status && this.state.isformvalid.status
+                        ? 
+                            <div id="id_categories">
+                                <h3 style={styleobj.h3blue}>            
+                                    <Glyphicon glyph="flash" style={styleobj.style_navglyph}/>
+                                    &nbsp; {"Choose your areas of interest : "} &nbsp;                
+                                </h3>
+                                <div style={{textAlign : 'left', margin : '20px', padding : '5px 2px', border : '1px lightgrey solid'}}>
+                                    <form className="form-inline">
+                                        <FormGroup>
+                                            {categorysection}
+                                        </FormGroup>
+                                    </form>
+                                </div>
+                            </div>                        
+                        : <span></span>
+                }
             </div>
         );
     }
