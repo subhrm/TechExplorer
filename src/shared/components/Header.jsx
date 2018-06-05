@@ -140,16 +140,7 @@ class Header extends React.Component{
 
 		if(this.state.validUser){
 
-			// Push the Logout button to the btn array			
-/*			
-			hdr_buttons.push(
-				<div style={styleobj.logout}  key="logout">
-					<Link to="/logout">
-						<Button key="logout" bsStyle="primary">Logout</Button>
-					</Link>
-				</div>
-			);
-*/
+			// Push the Logout button to the btn array
 			hdr_buttons.push(
 				<div style={styleobj.logout}  key="logout">
 					<DropdownButton
@@ -217,8 +208,8 @@ class Header extends React.Component{
 											name="searchinput" 
 											onChange={this.handleInptChange} 
 											value={this.state.searchinput || ""}/>										
-										<InputGroup.Addon onClick={()=>{ self.fnClickSearch()}} style={{'cursor' : 'pointer'}}>
-											<Link to="/searchresults">
+										<InputGroup.Addon style={{'cursor' : 'pointer'}}>
+											<Link to={"/search/" + this.state.searchinput}>
 												<Glyphicon glyph="search" style={styleobj.style_navglyph}/>
 											</Link>	
 										</InputGroup.Addon>										

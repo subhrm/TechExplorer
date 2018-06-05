@@ -120,11 +120,11 @@ class Signup extends React.Component{
     
     // Function to handle removing items from the category list
     fnremoveitem(item){
-        log(item, DEBUG);
+        //log(item, DEBUG);
         var oldlist = this.state.categories;
-        log(oldlist);
+        //log(oldlist);
         var newlist = oldlist.filter(( element )=>{ return( !(element == item))})
-        log(newlist);
+        //log(newlist);
         this.state.categories = newlist;
         this.setState(this.state);
     }

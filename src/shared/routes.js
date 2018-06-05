@@ -10,6 +10,7 @@ import Logout from './components/Logout.jsx';
 import WatchList from './components/WatchList.jsx';
 import Profile from './components/Profile.jsx';
 import BrowseEvents from './components/BrowseEvents.jsx';
+import SearchResults from './components/SearchResults.jsx';
 
 var Routes = [
     {
@@ -46,7 +47,12 @@ var Routes = [
     {
         path : '/browseevents',
         component : BrowseEvents
-    }    
+    },
+    
+    {
+        path : '/search/:pattern',
+        component : SearchResults
+    }
 ];
 
 export default Routes;
