@@ -35,12 +35,19 @@ module.exports={
     });
   },
 
+  SaveProfile:function(data){
+      Dispatcher.dispatch({
+        type:AppConstants.SAVEPROFILE,
+        data:data
+    });  
+  }, 
+
   FetchEvents:function(){
     Dispatcher.dispatch({
       type:AppConstants.FETCHEVENTS,
       data:""
     })
-  },
+  }, 
 
   FetchEventsByTech:function(data){
     Dispatcher.dispatch({

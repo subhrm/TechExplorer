@@ -45,7 +45,6 @@ class Login extends React.Component{
 	// Register with App store on component mount
 	componentDidMount(){
         AppStore.addChangeListener(this._onChange);	        
-        //document.getElementById("header_btn").style.display = none;
 	}
 
 	//De-Register with App store on component unmount

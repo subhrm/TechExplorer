@@ -14,6 +14,7 @@ var _validuser = false;
 var _UserSaved = false;
 var _UniqueEmail = true;
 var _events = [];
+var _userobj = null;
 
 var AppStore = objectAssign({}, BaseStore, {
 
@@ -32,11 +33,11 @@ var AppStore = objectAssign({}, BaseStore, {
     _getUser:function(){
         var user = sessionStorage.getItem("username");
         log("getUser : user from sessionstorage is : " + user , INFO);
-        if(user == ""){
-            return ("NA");
-        }else{
-            return (user);
-        }
+        return(user);
+    },
+
+    _getUserObj:function(){
+        return _userobj;
     },
 
     _getEvents:function(){
@@ -66,10 +67,15 @@ var AppStore = objectAssign({}, BaseStore, {
                 AppStore.emitChange();
                 break;
 
+            case  AppConstants.SAVEPROFILE:
+                SaveProfile(action.data);
+                AppStore.emitChange();
+                break;	
+                
             case AppConstants.FETCHEVENTS:
                 FetchEvents();
                 AppStore.emitChange();
-                break;
+                break;						
 
             case AppConstants.FETCHEVENTSBYTECH:
                 FetchEventsByTech();
@@ -150,22 +156,48 @@ function ValidateCredentials(userobj){
         if(data && data.username ){
             log("ValidateCredentials : Valid user", INFO);
             log("Setting session username as : " + userobj.email, DEBUG);
+
             sessionStorage.setItem("username",userobj.email);
             _validuser = true;
+            _userobj = {
+                username : "Ramana",
+                email : "ramana@infosys.com",
+                phone : "99122",
+                password : "ram@123"
+            };
         }
 */        
 _validuser = true;
+sessionStorage.setItem("username","ramana@infosys.com");
+_userobj = {
+                username : "Ramana",
+                email : "ramana@infosys.com",
+                phone : "99122",
+                password : "ram@123"
+        };
     }
 }
 
 // Function to handler logout functionality
 function Logout(){
+    log("Inside the function Logout", DEBUG);
     sessionStorage.clear();
         // CALL API for logout if you want to do something on server side for logout action
 // DEPENDENCY
 /*
 */
 _validuser = false;
+}
+
+// Function to save the user profile
+function SaveProfile(data){
+    log("Inside the function SaveProfile", DEBUG);
+    // CALL API to save the user profile to DB
+// DEPENDENCY
+/*
+
+*/
+    _userobj = data;
 }
 
 // Function to retrieve events
