@@ -42,8 +42,8 @@ class Profile extends React.Component{
                         phone : "",
                         password : "",
                         search : "",
-                        categories : [],
-                        allcategories : []
+                        technologies : [],
+                        alltechnologies : [] 
                     };
     }
 
@@ -56,19 +56,20 @@ class Profile extends React.Component{
     // Function to get the data from the store
     fnGetDataFromStore(){
         var obj = AppStore._getUserObj();
-        //var categories = AppStore._getCategories();
-        var categories = ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS"];
-        var allcategories = ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS", "node JS", "React Native", "Spring", "Hadoop"];
-
         log(JSON.stringify(obj), DEBUG);
         if(obj){
             this.state.username = obj.username;
             this.state.email = obj.email;
             this.state.phone = obj.phone;
             this.state.password = obj.password;
+            this.state.technologies = obj.technologies;
         }
-        this.state.categories = categories;
-        this.state.allcategories = allcategories;
+
+        var alltechnologies = [];
+        //alltechnologies = AppStore._getTechnologies();
+        var alltechnologies = ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS", "node JS", "React Native", "Spring", "Hadoop"];
+        this.state.alltechnologies = alltechnologies;
+
         this.setState(this.state);
     }
         
@@ -99,36 +100,35 @@ class Profile extends React.Component{
                         username : this.state.username,
                         password : this.state.password,
                         phone : this.state.phone,
-                        email : this.state.email
+                        email : this.state.email,
+                        technologies : this.state.technologies
                     };
         Actions.SaveProfile(userobj);
     }
 
-    // Function to handle removing items from the category list
+    // Function to handle removing items from the technology list
     fnremoveitem(item){
-        log(item, DEBUG);
-        var oldlist = this.state.categories;
-        log(oldlist);
+        //log(item, DEBUG);
+        var oldlist = this.state.technologies;
         var newlist = oldlist.filter(( element )=>{ return( !(element == item))})
-        log(newlist);
-        this.state.categories = newlist;
+        this.state.technologies = newlist;
         this.setState(this.state);
     }
 
     // Functiont to handle the select event on the drop down
     handleselect(element){
         log(element);
-        this.state.categories.push(element);
+        this.state.technologies.push(element);
         this.setState(this.state);
-    }    
+    }   
 
     render(){
 
         var self = this;
-        var categorysection = [];
+        var technologysection = [];
 
-        this.state.categories.map( element => {
-            categorysection.push(
+        this.state.technologies.map( element => {
+            technologysection.push(
                 <span key={element} style={{margin : '1px'}}>
                         <InputGroup style={{width : 'auto'}}>
                             <FormControl type="text" disabled value={element} 
@@ -144,17 +144,17 @@ class Profile extends React.Component{
         })
 
         var selectoptions = [];
-        var allcategories = this.state.allcategories;
-        var usercategories = this.state.categories;
-        var filteredcategories = allcategories.filter( (element) => {
-            if(usercategories.indexOf(element) >= 0){
+        var alltechnologies = this.state.alltechnologies;
+        var usertechnologies = this.state.technologies;
+        var filteredtechnologies = alltechnologies.filter( (element) => {
+            if(usertechnologies.indexOf(element) >= 0){
                 return false;
             }else{
                 return true;
             }
         });
     
-        filteredcategories.map( (element) => {
+        filteredtechnologies.map( (element) => {
             if(this.state.search == ""){
                 selectoptions.push(
                     <MenuItem key={element} onClick={()=>self.handleselect(element)}>
@@ -169,7 +169,7 @@ class Profile extends React.Component{
                 );
             }
         })
-        categorysection.push(
+        technologysection.push(
             <span key={"newdropdown"} style={{margin : '1px', width:'auto'}}>
                 <DropdownButton 
                     title={<input type='text' name="search" 
@@ -180,7 +180,7 @@ class Profile extends React.Component{
                     {selectoptions}
                 </DropdownButton>
             </span>
-        );        
+        );          
 
         return(
     <div id="div_profile">
@@ -243,19 +243,19 @@ class Profile extends React.Component{
             </Grid>
         </div>
         <br/>
-        <div id="id_categories">
+        <div id="id_technologies">
             <h3 style={styleobj.h3blue}>            
-                <Glyphicon glyph="flash" style={styleobj.style_navglyph}/>
-                &nbsp; {"Interested in "} &nbsp;                
+                &nbsp; <Glyphicon glyph="flash" style={styleobj.style_navglyph}/>
+                &nbsp; {"Choose your areas of interest : "} &nbsp;                
             </h3>
             <div style={{textAlign : 'left', margin : '20px', padding : '5px 2px', border : '1px lightgrey solid'}}>
                 <form className="form-inline">
                     <FormGroup>
-                        {categorysection}
+                        {technologysection}
                     </FormGroup>
                 </form>
             </div>
-        </div>
+        </div>  
         <div id="div_buttons" style={{textAlign :'center'}}>
             <Button bsStyle="primary" onClick={this.fnSaveChanges} style={styleobj.button}>
                 {"Save Changes"}

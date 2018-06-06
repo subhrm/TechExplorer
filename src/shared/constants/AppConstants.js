@@ -6,6 +6,5 @@ module.exports={
 	  SAVEPROFILE : "SAVEPROFILE",
     FETCHEVENTS : "FETCHEVENTS", //retrieve initial event list
     FETCHEVENTSBYTECH: "FETCHEVENTSBYTECH"
-	//Ramana
   };
   

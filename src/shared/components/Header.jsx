@@ -105,7 +105,7 @@ class Header extends React.Component{
 	
 	// Function to handle the change event from the store
 	_onChange(){
-        log("Profile Component received change event from App store", DEBUG);
+        log("Header Component received change event from App store", DEBUG);
         this.fnGetDataFromStore();    
 	}	
 	
