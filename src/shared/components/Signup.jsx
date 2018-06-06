@@ -15,7 +15,7 @@ const styleobj = {
     para : {'textAlign' : 'center', 'color':'grey'},
     helpblock : {'textAlign' : 'center', 'color' : 'blue'},
     panel : { textAlign :'center'},
-    panelfooter : {'textAlign' : 'center', 'color' : 'grey'},    
+    panelfooter : {'textAlign' : 'center', 'color' : 'grey', margin : '0px', padding: '0px'},    
     link : {textDecoration : 'underline', fontWeight : 'bold', 'cursor' : 'pointer'}
 };
 
@@ -26,14 +26,12 @@ class Signup extends React.Component{
         this.state = {
                         username : "",
                         email : "",
-                        phone : "",
                         password : "",
                         repassword : "",
                         isformvalid : {
                                         status : false,
                                         valid_username : true,
                                         valid_email : true,
-                                        valid_phone : true,
                                         valid_password : true,
                                         valid_repassword : true
                                     },
@@ -47,13 +45,12 @@ class Signup extends React.Component{
                                             status : false,
                                             username : false,
                                             email : false,
-                                            phone : false,
                                             password : false,
                                             repassword : false
                                         },
                         search : "",
-                        categories : [],
-                        allcategories : []                                                        
+                        technologies : [],
+                        alltechnologies : []                                                        
                     };
 
         this.handleInptChange = this.handleInptChange.bind(this);
@@ -99,12 +96,13 @@ class Signup extends React.Component{
         AppStore.addChangeListener(this._onChange);	
 
         // Get the initial data from the AppStore
-        //var categories = AppStore._getCategories();
-        var categories = ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS"];
-        var allcategories = ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS", "node JS", "React Native", "Spring", "Hadoop"];
+        //var technologies = AppStore._getTechnologies();
+        var technologies = [];
+        var alltechnologies = [];
+        //alltechnologies = AppStore._getTechnologies();
+        var alltechnologies = ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS", "node JS", "React Native", "Spring", "Hadoop"];
 
-        this.state.categories = categories;
-        this.state.allcategories = allcategories;
+        this.state.alltechnologies = alltechnologies;
         this.setState(this.state);
 	}
 
@@ -118,21 +116,19 @@ class Signup extends React.Component{
         this.setState({[event.target.name]: event.target.value});
     }   
     
-    // Function to handle removing items from the category list
+    // Function to handle removing items from the technology list
     fnremoveitem(item){
         //log(item, DEBUG);
-        var oldlist = this.state.categories;
-        //log(oldlist);
+        var oldlist = this.state.technologies;
         var newlist = oldlist.filter(( element )=>{ return( !(element == item))})
-        //log(newlist);
-        this.state.categories = newlist;
+        this.state.technologies = newlist;
         this.setState(this.state);
     }
 
     // Functiont to handle the select event on the drop down
     handleselect(element){
         log(element);
-        this.state.categories.push(element);
+        this.state.technologies.push(element);
         this.setState(this.state);
     }        
     
@@ -170,17 +166,6 @@ class Signup extends React.Component{
                     Actions.ChkEmail({email : this.state.email});
                 }
                 break;                
-
-            case 'phone' :
-                this.state.isformtouched.phone = true;
-                // Check if phone number is not null
-                if(this.state.phone == ""){
-                    this.state.isformvalid.valid_phone = false; 
-                    this.state.isformvalid.status = false;
-                }else{
-                    this.state.isformvalid.valid_phone = true;
-                }
-                break;
 
             case 'password' :
                 this.state.isformtouched.password = true;
@@ -228,8 +213,7 @@ class Signup extends React.Component{
         }
 
         if(this.state.isformtouched.username && this.state.isformtouched.email && 
-            this.state.isformtouched.phone && this.state.isformtouched.password &&
-            this.state.isformtouched.repassword){
+            this.state.isformtouched.password && this.state.isformtouched.repassword){
                 this.state.isformtouched.status = true;
             }
 
@@ -237,8 +221,7 @@ class Signup extends React.Component{
         this.setState(this.state);  
         
         if(this.state.isformvalid.valid_email && this.state.isformvalid.valid_password && 
-            this.state.isformvalid.valid_phone && this.state.isformvalid.valid_repassword &&
-             this.state.isformvalid.valid_username)
+            this.state.isformvalid.valid_repassword && this.state.isformvalid.valid_username)
              {
                  log("Setting form status to valid", DEBUG);
                  this.state.isformvalid.status = true;
@@ -256,8 +239,8 @@ class Signup extends React.Component{
             var signup_obj = {
                                 "username" : this.state.username,
                                 "email" : this.state.email,
-                                "phone" : this.state.phone,
-                                "password" : this.state.password
+                                "password" : this.state.password,
+                                "technologies" : this.state.technologies
                             };
 
             // set the state to submitted before firing the action object
@@ -272,10 +255,10 @@ class Signup extends React.Component{
     render(){
 
         var self = this;
-        var categorysection = [];
+        var technologysection = [];
 
-        this.state.categories.map( element => {
-            categorysection.push(
+        this.state.technologies.map( element => {
+            technologysection.push(
                 <span key={element} style={{margin : '1px'}}>
                         <InputGroup style={{width : 'auto'}}>
                             <FormControl type="text" disabled value={element} 
@@ -291,17 +274,17 @@ class Signup extends React.Component{
         })
 
         var selectoptions = [];
-        var allcategories = this.state.allcategories;
-        var usercategories = this.state.categories;
-        var filteredcategories = allcategories.filter( (element) => {
-            if(usercategories.indexOf(element) >= 0){
+        var alltechnologies = this.state.alltechnologies;
+        var usertechnologies = this.state.technologies;
+        var filteredtechnologies = alltechnologies.filter( (element) => {
+            if(usertechnologies.indexOf(element) >= 0){
                 return false;
             }else{
                 return true;
             }
         });
     
-        filteredcategories.map( (element) => {
+        filteredtechnologies.map( (element) => {
             if(this.state.search == ""){
                 selectoptions.push(
                     <MenuItem key={element} onClick={()=>self.handleselect(element)}>
@@ -316,7 +299,7 @@ class Signup extends React.Component{
                 );
             }
         })
-        categorysection.push(
+        technologysection.push(
             <span key={"newdropdown"} style={{margin : '1px', width:'auto'}}>
                 <DropdownButton 
                     title={<input type='text' name="search" 
@@ -380,21 +363,6 @@ class Signup extends React.Component{
                                                     : <span></span>
                                         }
                                         <FormGroup>
-                                            <Col componentClass={ControlLabel} sm={4} htmlFor="phone">
-                                                {"Phone Number"}
-                                            </Col>
-                                            <Col sm={8}>
-                                                <FormControl type="text" required id="phone" name="phone"
-                                                    onChange={this.handleInptChange} onBlur={this.handleInptBlur} 
-                                                    value={this.state.phone || ""}>
-                                                </FormControl>
-                                            </Col>
-                                        </FormGroup>
-                                        { !this.state.isformvalid.valid_phone
-                                            ? <p style={styleobj.para}>Phone number is mandatory field !!</p>
-                                            : <span></span>
-                                        }
-                                        <FormGroup>
                                             <Col componentClass={ControlLabel} sm={4} htmlFor="password">
                                                 {"Password"}
                                             </Col>
@@ -444,7 +412,7 @@ class Signup extends React.Component{
                                             onClick={()=>{this.props.history.push('/login')}}>
                                             Login
                                         </em>
-                                    </p>						
+                                    </p>			
                                 </Panel.Footer>			                                
                             </Panel>
                             { this.state.failedsave
@@ -466,15 +434,15 @@ class Signup extends React.Component{
                 {
                     this.state.isformtouched.status && this.state.isformvalid.status
                         ? 
-                            <div id="id_categories">
+                            <div id="id_technologies">
                                 <h3 style={styleobj.h3blue}>            
-                                    <Glyphicon glyph="flash" style={styleobj.style_navglyph}/>
+                                    &nbsp; <Glyphicon glyph="flash" style={styleobj.style_navglyph}/>
                                     &nbsp; {"Choose your areas of interest : "} &nbsp;                
                                 </h3>
-                                <div style={{textAlign : 'left', margin : '20px', padding : '5px 2px', border : '1px lightgrey solid'}}>
+                                <div style={{textAlign : 'left', margin : '30px', padding : '5px 2px', border : '1px lightgrey solid'}}>
                                     <form className="form-inline">
                                         <FormGroup>
-                                            {categorysection}
+                                            {technologysection}
                                         </FormGroup>
                                     </form>
                                 </div>

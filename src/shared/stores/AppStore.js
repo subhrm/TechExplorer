@@ -14,6 +14,8 @@ var _validuser = false;
 var _UserSaved = false;
 var _UniqueEmail = true;
 var _events = [];
+var _alltechnologies = [];
+var _allcategories = [];
 var _userobj = null;
 
 var AppStore = objectAssign({}, BaseStore, {
@@ -43,6 +45,22 @@ var AppStore = objectAssign({}, BaseStore, {
     _getEvents:function(){
         return _events;
     },
+
+    _getTechnologies:function(){
+        if(_alltechnologies && _alltechnologies.length > 0){
+            return _alltechnologies;
+        }else{
+            return(GetTechnologies);
+        }
+    },
+
+    _getCategories:function(){
+        if(_allcategories && _allcategories.length > 0){
+            return _allcategories;
+        }else{
+            return(GetCategories);
+        }
+    },    
 
     dispatchToken: AppDispatcher.register(function(action){
         switch(action.type){
@@ -88,7 +106,7 @@ var AppStore = objectAssign({}, BaseStore, {
 // Function to validate the uniqueness of email id for signup
 function CheckEmail(emailobj){
 
-    log("Inside fn-CheckEmail", DEBUG);
+    log("Inside function CheckEmail", DEBUG);
     log(JSON.stringify(emailobj), DEBUG);
 
     _UniqueEmail = false;
@@ -121,24 +139,21 @@ function Signup(userobj){
     _UserSaved = false;
 
     // AJAX Call to the server API to save the user in DB
-//DEPENDENCY
-/*    
-    var data = AjaxHelper.signup("/signup", userobj);
-    if(data.status == "success"){
+    var data = AjaxHelper.signup("/user", userobj);
+    log("returned from Ajax Helper:signup", DEBUG);
+    log(JSON.stringify(data), DEBUG);
+    if(data && data.status == "success"){
         log("Signup : Data Saved Successfully", INFO);
         _UserSaved = true;
     }else{
         log("Signup : Unable to save the data to DB", INFO);
         _UserSaved = false;
     }
-*/
-_UserSaved = true;
-
 }
 
 // Function used for validating the User credentials from Login Screen
 function ValidateCredentials(userobj){
-    log("Inside fn-ValidateCredentials", DEBUG);  
+    log("Inside function ValidateCredentials", DEBUG);  
     log(JSON.stringify(userobj), DEBUG);
     _validuser = false;
     sessionStorage.removeItem("username");
@@ -148,56 +163,102 @@ function ValidateCredentials(userobj){
     }
     else{
         // CALL API for login
-// DEPENDENCY
-/*        
-        var data=AjaxHelper.login("/login",userobj);
+        var data=AjaxHelper.login("/user/login",userobj);
         log("returned from Ajax Helper", DEBUG);
         log(JSON.stringify(data), DEBUG);
         if(data && data.username ){
             log("ValidateCredentials : Valid user", INFO);
-            log("Setting session username as : " + userobj.email, DEBUG);
 
+            log("Setting session username as : " + userobj.email, DEBUG);
             sessionStorage.setItem("username",userobj.email);
+
             _validuser = true;
             _userobj = {
-                username : "Ramana",
-                email : "ramana@infosys.com",
-                phone : "99122",
-                password : "ram@123"
+                username : data.username,
+                email : data.email,
+                password : "password",
+                technologies : data.technologies,
+                watchlist : data.watchlist
             };
         }
-*/        
+    
+
+// Test data     
 _validuser = true;
 sessionStorage.setItem("username","ramana@infosys.com");
 _userobj = {
                 username : "Ramana",
                 email : "ramana@infosys.com",
-                phone : "99122",
-                password : "ram@123"
+                password : "ram@123",
+                technologies : ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS"],
+                watchlist : []
         };
+     
     }
 }
 
 // Function to handler logout functionality
 function Logout(){
     log("Inside the function Logout", DEBUG);
-    sessionStorage.clear();
-        // CALL API for logout if you want to do something on server side for logout action
-// DEPENDENCY
-/*
-*/
+
+    // CALL API for logout 
+    var data=AjaxHelper.logout("/user/logout","");
+    log("returned from Ajax Helper", DEBUG);
+    log(JSON.stringify(data), DEBUG);
+
+    if(data && data.status == "success"){
+        // Clear the Global data
+        _validuser = false;
+        _userobj = null;
+
+        // Clear the session data
+        sessionStorage.clear();
+    }
+
+// TEST data till API gets to proper state    
 _validuser = false;
+_userobj = null;
+sessionStorage.clear();
 }
 
 // Function to save the user profile
-function SaveProfile(data){
+function SaveProfile(userobj){
     log("Inside the function SaveProfile", DEBUG);
-    // CALL API to save the user profile to DB
+    log(JSON.stringify(userobj), DEBUG);
+    _UserSaved = false;
 // DEPENDENCY
 /*
-
+    // AJAX Call to the server API to save the user in DB
+    var data = AjaxHelper.saveprofile("/user/save", userobj);
+    log("returned from Ajax Helper:signup", DEBUG);
+    log(JSON.stringify(data), DEBUG);
+    if(data && data.status == "success"){
+        log("Signup : Data Saved Successfully", INFO);
+        _UserSaved = true;
+        _userobj = {
+            username : data.username,
+            email : data.email,
+            password : "password",
+            technologies : data.technologies,
+            watchlist : data.watchlist
+        };        
+    }else{
+        log("Signup : Unable to save the data to DB", INFO);
+        _UserSaved = false;
+    }    
 */
-    _userobj = data;
+
+// Test Data till API gets working
+_UserSaved = true;
+var newuserobj = {
+    username : userobj.username,
+    email : userobj.email,
+    password : "password",
+    technologies : userobj.technologies,
+    watchlist : userobj.watchlist
+}; 
+_userobj = newuserobj;
+
 }
 
 // Function to retrieve events
@@ -228,6 +289,7 @@ function FetchEventsByTech(techobj){
         }
 */}
 
+
 // Function to retrieve events by CATEGORY
 function FetchEventsByCat(techobj){
     log("Inside fn-FetchEventsByCategory",DEBUG);
@@ -241,6 +303,30 @@ function FetchEventsByCat(techobj){
             _events = data
         }
 */}
+
+// Function to get the technologies list
+function GetTechnologies(){
+    log("Inside function GetTechnologies", DEBUG);
+    var data=AjaxHelper.gettechnologies("/event/list-technologies","");
+    log("returned from Ajax Helper : gettechnologies", DEBUG);
+    log(JSON.stringify(data), DEBUG);
+    if(data && data.length > 0){
+        _alltechnologies = data;
+        return _alltechnologies;
+    }
+}
+
+// Function to get the technologies list
+function GetCategories(){
+    log("Inside function GetCategories", DEBUG);
+    var data=AjaxHelper.getcategories("/event/list-categories","");
+    log("returned from Ajax Helper : getcategories", DEBUG);
+    log(JSON.stringify(data), DEBUG);
+    if(data && data.length > 0){
+        _allcategories = data;
+        return _allcategories;    
+    }
+}
 
 }
 
