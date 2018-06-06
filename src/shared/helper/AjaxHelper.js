@@ -64,6 +64,7 @@ module.exports={
 
     login:PostRequest,
     saveprofile:PostRequest,
+    savepreferences:PostRequest,
     logout:PostRequest,
 
     getcategories:GetRequest,

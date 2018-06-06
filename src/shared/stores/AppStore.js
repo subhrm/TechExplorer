@@ -14,8 +14,8 @@ var _validuser = false;
 var _UserSaved = false;
 var _UniqueEmail = true;
 var _events = [];
-var _alltechnologies = [];
-var _allcategories = [];
+var _alltechnologies = null;
+var _allcategories = null;
 var _userobj = null;
 
 var AppStore = objectAssign({}, BaseStore, {
@@ -47,7 +47,7 @@ var AppStore = objectAssign({}, BaseStore, {
     },
 
     _getTechnologies:function(){
-        if(_alltechnologies && _alltechnologies.length > 0){
+        if(_alltechnologies && _alltechnologies.list){
             return _alltechnologies;
         }else{
             return(GetTechnologies);
@@ -55,7 +55,7 @@ var AppStore = objectAssign({}, BaseStore, {
     },
 
     _getCategories:function(){
-        if(_allcategories && _allcategories.length > 0){
+        if(_allcategories && _allcategories.list ){
             return _allcategories;
         }else{
             return(GetCategories);
@@ -89,7 +89,7 @@ var AppStore = objectAssign({}, BaseStore, {
                 SaveProfile(action.data);
                 AppStore.emitChange();
                 break;	
-                
+
             case AppConstants.FETCHEVENTS:
                 FetchEvents();
                 AppStore.emitChange();
@@ -138,8 +138,14 @@ function Signup(userobj){
     log(JSON.stringify(userobj), DEBUG);
     _UserSaved = false;
 
+    var reqobj = {
+                    "id" : userobj.email,
+                    "name" : userobj.username,
+                    "password" : userobj.password,
+                    "email" : userobj.email,
+                };
     // AJAX Call to the server API to save the user in DB
-    var data = AjaxHelper.signup("/user", userobj);
+    var data = AjaxHelper.signup("/user", reqobj);
     log("returned from Ajax Helper:signup", DEBUG);
     log(JSON.stringify(data), DEBUG);
     if(data && data.status == "success"){
@@ -155,41 +161,46 @@ function Signup(userobj){
 function ValidateCredentials(userobj){
     log("Inside function ValidateCredentials", DEBUG);  
     log(JSON.stringify(userobj), DEBUG);
+
     _validuser = false;
-    sessionStorage.removeItem("username");
+    sessionStorage.clear();
+    //sessionStorage.removeItem("username");
 
     if(userobj.email == "" || userobj.password == ""){
         log("ValidateCredentials : Invalid user", INFO);
     }
     else{
+        var reqobj = {
+                        "id" : userobj.email,
+                        "password" : userobj.password
+                    };
+
         // CALL API for login
-        var data=AjaxHelper.login("/user/login",userobj);
+        var data=AjaxHelper.login("/user/login",reqobj);
         log("returned from Ajax Helper", DEBUG);
         log(JSON.stringify(data), DEBUG);
-        if(data && data.username ){
+        if(data && data.token ){
             log("ValidateCredentials : Valid user", INFO);
 
             log("Setting session username as : " + userobj.email, DEBUG);
-            sessionStorage.setItem("username",userobj.email);
+            sessionStorage.setItem("username", userobj.email);
+            sessionStorage.setItem("usertoken", data.token);            
 
             _validuser = true;
             _userobj = {
-                username : data.username,
-                email : data.email,
-                password : "password",
-                technologies : data.technologies,
-                watchlist : data.watchlist
+                username : data.full_name,
+                email : data.id,
+                technologies : null,
+                watchlist : null
             };
         }
     
-
 // Test data     
 _validuser = true;
 sessionStorage.setItem("username","ramana@infosys.com");
 _userobj = {
                 username : "Ramana",
                 email : "ramana@infosys.com",
-                password : "ram@123",
                 technologies : ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS"],
                 watchlist : []
         };
@@ -201,12 +212,18 @@ _userobj = {
 function Logout(){
     log("Inside the function Logout", DEBUG);
 
+    var reqobj = {
+                    "id" : sessionStorage.getItem("username"),
+                    "token" : sessionStorage.getItem("usertoken")
+                };
     // CALL API for logout 
-    var data=AjaxHelper.logout("/user/logout","");
-    log("returned from Ajax Helper", DEBUG);
+    var data=AjaxHelper.logout("/user/logout", reqobj);
+    log("returned from Ajax Helper : logout", DEBUG);
     log(JSON.stringify(data), DEBUG);
 
     if(data && data.status == "success"){
+
+        log("User Logged out successfully", INFO);
         // Clear the Global data
         _validuser = false;
         _userobj = null;
@@ -226,39 +243,54 @@ function SaveProfile(userobj){
     log("Inside the function SaveProfile", DEBUG);
     log(JSON.stringify(userobj), DEBUG);
     _UserSaved = false;
-// DEPENDENCY
-/*
-    // AJAX Call to the server API to save the user in DB
-    var data = AjaxHelper.saveprofile("/user/save", userobj);
-    log("returned from Ajax Helper:signup", DEBUG);
-    log(JSON.stringify(data), DEBUG);
-    if(data && data.status == "success"){
-        log("Signup : Data Saved Successfully", INFO);
+
+    if(userobj.preferencesupdate){
+
+        var reqobj = {
+                    "id" : sessionStorage.getItem("username"),
+                    "token" : sessionStorage.getItem("usertoken"),
+                    "list" : userobj.technologies
+                };
+
+        // AJAX Call to the server API to save the user in DB
+        var data = AjaxHelper.savepreferences("/actions/update-user-preferences", reqobj);
+        log("returned from Ajax Helper:savepreferences", DEBUG);
+        log(JSON.stringify(data), DEBUG);
+        if(data && data.status == "success"){
+            _userobj.technologies = userobj.technologies;
+        }
+
+        // Test Data till API gets functional
+        _userobj.technologies = userobj.technologies;
+    }
+
+    if(userobj.profileupdate){
+        // DEPENDENCY - Ignoring this functionality for time being
+        /*
+            // AJAX Call to the server API to save the user in DB
+            var data = AjaxHelper.saveprofile("/user/saveprofile", userobj);
+            log("returned from Ajax Helper:signup", DEBUG);
+            log(JSON.stringify(data), DEBUG);
+            if(data && data.status == "success"){
+                log("Signup : Data Saved Successfully", INFO);
+                _UserSaved = true;
+                _userobj = {
+                    username : data.username,
+                    email : data.email,
+                    password : "password",
+                    technologies : data.technologies,
+                    watchlist : data.watchlist
+                };        
+            }else{
+                log("Signup : Unable to save the data to DB", INFO);
+                _UserSaved = false;
+            }    
+        */
+
+        // Test Data till this functionailty API gets implemented/working
         _UserSaved = true;
-        _userobj = {
-            username : data.username,
-            email : data.email,
-            password : "password",
-            technologies : data.technologies,
-            watchlist : data.watchlist
-        };        
-    }else{
-        log("Signup : Unable to save the data to DB", INFO);
-        _UserSaved = false;
-    }    
-*/
-
-// Test Data till API gets working
-_UserSaved = true;
-var newuserobj = {
-    username : userobj.username,
-    email : userobj.email,
-    password : "password",
-    technologies : userobj.technologies,
-    watchlist : userobj.watchlist
-}; 
-_userobj = newuserobj;
-
+        _userobj.username = userobj.username;
+    }
 }
 
 // Function to retrieve events
@@ -310,7 +342,7 @@ function GetTechnologies(){
     var data=AjaxHelper.gettechnologies("/event/list-technologies","");
     log("returned from Ajax Helper : gettechnologies", DEBUG);
     log(JSON.stringify(data), DEBUG);
-    if(data && data.length > 0){
+    if(data){
         _alltechnologies = data;
         return _alltechnologies;
     }
@@ -322,7 +354,7 @@ function GetCategories(){
     var data=AjaxHelper.getcategories("/event/list-categories","");
     log("returned from Ajax Helper : getcategories", DEBUG);
     log(JSON.stringify(data), DEBUG);
-    if(data && data.length > 0){
+    if(data){
         _allcategories = data;
         return _allcategories;    
     }

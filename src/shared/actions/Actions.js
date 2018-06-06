@@ -42,6 +42,13 @@ module.exports={
     });  
   }, 
 
+  SavePreferences:function(data){
+      Dispatcher.dispatch({
+        type:AppConstants.SAVEPREFERENCES,
+        data:data
+    });  
+  },   
+
   FetchEvents:function(){
     Dispatcher.dispatch({
       type:AppConstants.FETCHEVENTS,

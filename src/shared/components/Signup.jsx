@@ -99,7 +99,8 @@ class Signup extends React.Component{
         //var technologies = AppStore._getTechnologies();
         var technologies = [];
         var alltechnologies = [];
-        //alltechnologies = AppStore._getTechnologies();
+        //var alltechnologiesobj = AppStore._getTechnologies();
+        //alltechnologies = alltechnologiesobj.list;
         var alltechnologies = ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS", "node JS", "React Native", "Spring", "Hadoop"];
 
         this.state.alltechnologies = alltechnologies;
@@ -129,6 +130,7 @@ class Signup extends React.Component{
     handleselect(element){
         log(element);
         this.state.technologies.push(element);
+        this.state.search = "";
         this.setState(this.state);
     }        
     
@@ -404,17 +406,16 @@ class Signup extends React.Component{
                                             </Col>
                                         </FormGroup>
                                     </Form>
-                                </Panel.Body>
-                                <Panel.Footer>
                                     <p style={styleobj.panelfooter}>
                                         Go back to &nbsp;
                                         <em style={styleobj.link}
                                             onClick={()=>{this.props.history.push('/login')}}>
                                             Login
                                         </em>
-                                    </p>			
-                                </Panel.Footer>			                                
+                                    </p>                                    
+                                </Panel.Body>
                             </Panel>
+
                             { this.state.failedsave
                                 ?  <p style={styleobj.error}> 
                                         !! &nbsp; Failed to save the data.. Please Try Again !!

@@ -170,8 +170,7 @@ class Login extends React.Component{
 								{"Sign in"}
 							</Button>
 						</Form>
-					</Panel.Body>	
-					<Panel.Footer>
+						<br/>
 						<p style={styleobj.panelfooter}>
 							New User? &nbsp;
 							<em style={styleobj.link}
@@ -179,7 +178,7 @@ class Login extends React.Component{
 								Signup Here
 							</em>
 						</p>						
-					</Panel.Footer>				
+					</Panel.Body>	
 				</Panel>
 
 				{ !this.state.validuser && this.state.submitted

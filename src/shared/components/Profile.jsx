@@ -39,8 +39,10 @@ class Profile extends React.Component{
         this.state = {
                         username : "",
                         email : "",
-                        password : "",
+                        password : "password",
                         search : "",
+                        profileupdate : false,
+                        preferencesupdate : false,
                         technologies : [],
                         alltechnologies : [] 
                     };
@@ -59,12 +61,12 @@ class Profile extends React.Component{
         if(obj){
             this.state.username = obj.username;
             this.state.email = obj.email;
-            this.state.password = obj.password;
             this.state.technologies = obj.technologies;
         }
 
         var alltechnologies = [];
-        //alltechnologies = AppStore._getTechnologies();
+        //var alltechnologiesobj = AppStore._getTechnologies();
+        //alltechnologies = alltechnologiesobj.list;
         var alltechnologies = ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS", "node JS", "React Native", "Spring", "Hadoop"];
         this.state.alltechnologies = alltechnologies;
 
@@ -84,7 +86,7 @@ class Profile extends React.Component{
         
 	// Function to handle the input changes
 	handleInptChange(event) {
-		this.setState({[event.target.name]: event.target.value});
+        this.setState({[event.target.name]: event.target.value});
     }
 
     // Function to reset the form
@@ -94,12 +96,14 @@ class Profile extends React.Component{
 
     // Function to save the changes
     fnSaveChanges(){
+
         var userobj = {
-                        username : this.state.username,
-                        password : this.state.password,
-                        email : this.state.email,
-                        technologies : this.state.technologies
-                    };
+            username : this.state.username,
+            password : this.state.password,
+            technologies : this.state.technologies,
+            profileupdate : this.state.profileupdate,
+            preferencesupdate : this.state.preferencesupdate
+        };
         Actions.SaveProfile(userobj);
     }
 
@@ -109,6 +113,7 @@ class Profile extends React.Component{
         var oldlist = this.state.technologies;
         var newlist = oldlist.filter(( element )=>{ return( !(element == item))})
         this.state.technologies = newlist;
+        this.state.preferencesupdate = true;
         this.setState(this.state);
     }
 
@@ -116,6 +121,8 @@ class Profile extends React.Component{
     handleselect(element){
         log(element);
         this.state.technologies.push(element);
+        this.state.search = "";
+        this.state.preferencesupdate = true;
         this.setState(this.state);
     }   
 
