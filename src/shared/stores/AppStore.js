@@ -205,7 +205,7 @@ function FetchEvents(){
     log("Inside fn-FetchEvents",DEBUG);
     // DEPENDENCY
 /*      adding /events in SPEC to fetch initial list of events, categories, and technology from Server 
-        var data=AjaxHelper.fetch("/events");
+        var data=AjaxHelper.fetch("/events/list-all-events");
         log("returned from Ajax Helper", DEBUG);
         log(JSON.stringify(data), DEBUG);
         if(data){
@@ -220,6 +220,20 @@ function FetchEventsByTech(techobj){
     // DEPENDENCY
 /*      
         var data=AjaxHelper.fetch("/event/by-technology/{techobj.id}?start=0&page-size=size");
+        log("returned from Ajax Helper", DEBUG);
+        log(JSON.stringify(data), DEBUG);
+        if(data){
+            log("Events : data", INFO);
+            _events = data
+        }
+*/}
+
+// Function to retrieve events by CATEGORY
+function FetchEventsByCat(techobj){
+    log("Inside fn-FetchEventsByCategory",DEBUG);
+    // DEPENDENCY
+/*      
+        var data=AjaxHelper.fetch("/event/by-category/{category_id}");
         log("returned from Ajax Helper", DEBUG);
         log(JSON.stringify(data), DEBUG);
         if(data){

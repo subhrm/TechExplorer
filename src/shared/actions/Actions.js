@@ -51,7 +51,14 @@ module.exports={
 
   FetchEventsByTech:function(data){
     Dispatcher.dispatch({
-      type:AppConstants.EVENTSBYTECH,
+      type:AppConstants.FETCHEVENTSBYTECH,
+      data:data
+    })
+  },
+
+  FetchEventsByCat:function(data){
+    Dispatcher.dispatch({
+      type:AppConstants.FETCHEVENTSBYCAT,
       data:data
     })
   },

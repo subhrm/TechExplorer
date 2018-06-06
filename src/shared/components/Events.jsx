@@ -3,8 +3,11 @@ import { Panel, Grid, Row, Col, Glyphicon } from 'react-bootstrap';
 
 const styleobj = {
     style_border : {
-             border: '1px solid black',
-             height: '200px',
+        border: '1px solid black',
+        borderRadius: '10px',
+        borderBottomLeftRadius: '0px',
+        borderBottomRightRadius: '0px',             
+        height: '200px',
         },
 
     style_col : {
@@ -13,6 +16,7 @@ const styleobj = {
 
     border : {
         border: '1px solid black',
+        borderRadius: '10px'
     },
 
     style_glyph : {
@@ -29,7 +33,7 @@ class Events extends React.Component{
     render(){
         return(<div id='div_events' style={styleobj.border}>
                     <div style={styleobj.style_border}>
-                        image
+                        <br/>image
                     </div>
 
                     <div style={styleobj.style_col}> 

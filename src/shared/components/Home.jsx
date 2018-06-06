@@ -1,5 +1,6 @@
 import React from 'react';
 import { Panel, Grid, Row, Col, ButtonGroup, Button } from 'react-bootstrap';
+import { Navbar, NavbarBrand, NavbarCollapse, NavbarToggle, NavbarHeader } from 'react-bootstrap';
 import Select from 'react-select';
 
 import Events from './Events.jsx';
@@ -81,7 +82,7 @@ const styleobj = {
         },
     
     tech_style : {
-        fontSize : '35px'
+        fontSize : '28px'
         }
 };
 
@@ -105,7 +106,9 @@ class Home extends React.Component{
                         };
 
         this.loadLocations = this.loadLocations.bind(this);
+        this.onLocChange = this.onLocChange.bind(this);
         this.loadtechnologies = this.loadtechnologies.bind(this);
+        this.onTechChange = this.onTechChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this._onChange = this._onChange.bind(this);
     }
@@ -211,11 +214,11 @@ class Home extends React.Component{
             <div id="div_home">
 <Grid fluid={true}>
 
-    <Row>
+    <Row style={styleobj.nav_style}>
 
-        <Col sm={3} md={2} style={styleobj.nav_style}>
+        <Col sm={3} md={2} >
 
-            <div style={{ fontSize: '20px', padding: '5px'}}>
+            <div style={{ fontSize: '18px', padding: '5px'}}>
                 {"Technology"}
             </div>
             <select onChange={this.onTechChange.bind(this)} className="form-control" name="tech">
@@ -223,11 +226,27 @@ class Home extends React.Component{
                             return (<option value={option.id+option.name} key={index + option.name} >{option.name}</option>)
                     })}
             </select>
-            <div style={styleobj.tech_style}>{this.state.technology.name}</div>
             
-            <br/><br/>
+        </Col>
+
+        <Col md={8} sm={6} style={{textAlign: 'center'}}>
+               
+        <ButtonGroup style={{ marginLeft: '5%', textAlign: 'center'}}>
+                <ButtonGroup>
+                    {category_list.map((category,index) => {
+                        return (
+                            <Button key={'btn' + index} onClick={() => this.handleClick(category)}
+                            >{category}</Button> 
+                        )
+                    })}
+                </ButtonGroup>
+            </ButtonGroup>
+        
+        </Col>
+
+        <Col sm={3} md={2}>
             
-            <div style={{ fontSize: '20px', padding: '5px'}}>
+            <div style={{ fontSize: '18px', padding: '5px', textAlign: 'right'}}>
                 {"Location"}
             </div>
             <select value={this.state.location} onChange={this.onLocChange.bind(this)} className="form-control" name="city">
@@ -235,49 +254,24 @@ class Home extends React.Component{
                                         return <option value={option} key={option} >{option}</option>
                     })}
             </select>
-            <div style={styleobj.tech_style}>{this.state.location}</div>
 
         </Col>
 
-        <Col sm={9} md={10}>
+    </Row>
+    <Row style={{padding: '5px'}}>
 
-            <Row style={styleobj.nav_style}>
-        
-                <Col md={8} mdOffset={2} smOffset={1}>
-                
-                    <ButtonGroup style={{ marginLeft: '5%'}}>
-                        <ButtonGroup>
-                            {category_list.map((category,index) => {
-                                return (
-                                    <Button key={'btn' + index} onClick={() => this.handleClick(category)}
-                                    >{category}</Button> 
-                                )
-                            })}
-                        </ButtonGroup>
-                    </ButtonGroup>
-                
-                </Col>
-                
-            </Row>
-
-            <Row>
-
-                {filtered_events.map(function(events,index){
-                        return ( 
-                            <Col sm={6} md={4} lg={3} key={'eventKey' + index} style={styleobj.style_event}>
-                                    <Events ename={events.name}
-                                    edesc={events.desc}
-                                    edate={events.date}
-                                    eloc={events.location} />
-                            </Col>                                
-                            )
-                        })
-                    } 
+        {filtered_events.map(function(events,index){
+                return ( 
+                    <Col sm={6} md={4} lg={3} key={'eventKey' + index} style={styleobj.style_event}>
+                            <Events ename={events.name}
+                            edesc={events.desc}
+                            edate={events.date}
+                            eloc={events.location} />
+                    </Col>                                
+                    )
+                })
+            }
                     
-            </Row>
-
-        </Col>
-
     </Row>
 </Grid>
             </div>
