@@ -26,14 +26,12 @@ class Signup extends React.Component{
         this.state = {
                         username : "",
                         email : "",
-                        phone : "",
                         password : "",
                         repassword : "",
                         isformvalid : {
                                         status : false,
                                         valid_username : true,
                                         valid_email : true,
-                                        valid_phone : true,
                                         valid_password : true,
                                         valid_repassword : true
                                     },
@@ -47,7 +45,6 @@ class Signup extends React.Component{
                                             status : false,
                                             username : false,
                                             email : false,
-                                            phone : false,
                                             password : false,
                                             repassword : false
                                         },
@@ -170,17 +167,6 @@ class Signup extends React.Component{
                 }
                 break;                
 
-            case 'phone' :
-                this.state.isformtouched.phone = true;
-                // Check if phone number is not null
-                if(this.state.phone == ""){
-                    this.state.isformvalid.valid_phone = false; 
-                    this.state.isformvalid.status = false;
-                }else{
-                    this.state.isformvalid.valid_phone = true;
-                }
-                break;
-
             case 'password' :
                 this.state.isformtouched.password = true;
                 // Check if the password is not null
@@ -227,8 +213,7 @@ class Signup extends React.Component{
         }
 
         if(this.state.isformtouched.username && this.state.isformtouched.email && 
-            this.state.isformtouched.phone && this.state.isformtouched.password &&
-            this.state.isformtouched.repassword){
+            this.state.isformtouched.password && this.state.isformtouched.repassword){
                 this.state.isformtouched.status = true;
             }
 
@@ -236,8 +221,7 @@ class Signup extends React.Component{
         this.setState(this.state);  
         
         if(this.state.isformvalid.valid_email && this.state.isformvalid.valid_password && 
-            this.state.isformvalid.valid_phone && this.state.isformvalid.valid_repassword &&
-             this.state.isformvalid.valid_username)
+            this.state.isformvalid.valid_repassword && this.state.isformvalid.valid_username)
              {
                  log("Setting form status to valid", DEBUG);
                  this.state.isformvalid.status = true;
@@ -255,7 +239,6 @@ class Signup extends React.Component{
             var signup_obj = {
                                 "username" : this.state.username,
                                 "email" : this.state.email,
-                                "phone" : this.state.phone,
                                 "password" : this.state.password,
                                 "technologies" : this.state.technologies
                             };
@@ -378,21 +361,6 @@ class Signup extends React.Component{
                                                 !this.state.unique_email 
                                                     ? <p style={styleobj.para}>Email is already registered. Please enter different.</p>
                                                     : <span></span>
-                                        }
-                                        <FormGroup>
-                                            <Col componentClass={ControlLabel} sm={4} htmlFor="phone">
-                                                {"Phone Number"}
-                                            </Col>
-                                            <Col sm={8}>
-                                                <FormControl type="text" required id="phone" name="phone"
-                                                    onChange={this.handleInptChange} onBlur={this.handleInptBlur} 
-                                                    value={this.state.phone || ""}>
-                                                </FormControl>
-                                            </Col>
-                                        </FormGroup>
-                                        { !this.state.isformvalid.valid_phone
-                                            ? <p style={styleobj.para}>Phone number is mandatory field !!</p>
-                                            : <span></span>
                                         }
                                         <FormGroup>
                                             <Col componentClass={ControlLabel} sm={4} htmlFor="password">

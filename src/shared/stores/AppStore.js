@@ -176,7 +176,6 @@ function ValidateCredentials(userobj){
             _userobj = {
                 username : data.username,
                 email : data.email,
-                phone : data.phone,
                 password : "password",
                 technologies : data.technologies,
                 watchlist : data.watchlist
@@ -190,7 +189,6 @@ sessionStorage.setItem("username","ramana@infosys.com");
 _userobj = {
                 username : "Ramana",
                 email : "ramana@infosys.com",
-                phone : "99122",
                 password : "ram@123",
                 technologies : ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS"],
                 watchlist : []
@@ -240,7 +238,6 @@ function SaveProfile(userobj){
         _userobj = {
             username : data.username,
             email : data.email,
-            phone : data.phone,
             password : "password",
             technologies : data.technologies,
             watchlist : data.watchlist
@@ -256,7 +253,6 @@ _UserSaved = true;
 var newuserobj = {
     username : userobj.username,
     email : userobj.email,
-    phone : userobj.phone,
     password : "password",
     technologies : userobj.technologies,
     watchlist : userobj.watchlist

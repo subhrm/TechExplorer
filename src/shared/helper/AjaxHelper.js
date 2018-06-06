@@ -8,6 +8,7 @@ function PostRequest(path, reqdata){
             url:url,
             type:'POST',
             data:reqdata,
+            contentType:'application/json',
             async:false,
             success:function(retObj){
                 data=retObj;
@@ -25,6 +26,7 @@ function GetRequest(path, reqdata){
     $.ajax({
               url:url,
               type:'GET',
+              contentType:'application/json',
               data:reqdata,
               async:false,
               success:function(retObj){
@@ -43,6 +45,7 @@ function PutRequest(path, reqdata){
     $.ajax({
               url:url,
               type:'PUT',
+              contentType:'application/json',
               data:reqdata,
               async:false,
               success:function(retObj){

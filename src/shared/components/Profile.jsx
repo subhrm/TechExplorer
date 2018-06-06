@@ -39,7 +39,6 @@ class Profile extends React.Component{
         this.state = {
                         username : "",
                         email : "",
-                        phone : "",
                         password : "",
                         search : "",
                         technologies : [],
@@ -60,7 +59,6 @@ class Profile extends React.Component{
         if(obj){
             this.state.username = obj.username;
             this.state.email = obj.email;
-            this.state.phone = obj.phone;
             this.state.password = obj.password;
             this.state.technologies = obj.technologies;
         }
@@ -99,7 +97,6 @@ class Profile extends React.Component{
         var userobj = {
                         username : this.state.username,
                         password : this.state.password,
-                        phone : this.state.phone,
                         email : this.state.email,
                         technologies : this.state.technologies
                     };
@@ -223,17 +220,6 @@ class Profile extends React.Component{
                                 <Col sm={8}>
                                     <FormControl type="text" required id="email" name="email" disabled
                                         value={this.state.email || ""}>
-                                    </FormControl>
-                                </Col>
-                            </FormGroup>
-                            <FormGroup>
-                                <Col componentClass={ControlLabel} sm={4} htmlFor="phone" style={styleobj.left}>
-                                    {"Mobile No. : "}
-                                </Col>
-                                <Col sm={8}>
-                                    <FormControl type="text" required id="phone" name="phone"
-                                        onChange={this.handleInptChange} onBlur={this.handleInptBlur} 
-                                        value={this.state.phone || ""}>
                                     </FormControl>
                                 </Col>
                             </FormGroup>
