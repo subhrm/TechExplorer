@@ -49,9 +49,18 @@ class WatchList extends React.Component{
         this._onChange = this._onChange.bind(this);
     }
 
+    // Retrieve list of events for initial render
+    componentWillMount() {
+        this.state.events = AppStore._getAllEvents();
+
+        var userobj = AppStore._getUserObj();
+        this.setState({
+            watchlist_events: userobj.events
+        })
+    }
     // Register with App store on component mount
     componentDidMount() {
-        // AppStore.addChangeListener(this._onChange);
+        AppStore.addChangeListener(this._onChange);
 
     }
 
@@ -75,19 +84,20 @@ class WatchList extends React.Component{
             <div id="div_WatchList">
         <Grid>
             <Row>
-            
-            <ListGroup>
-                {event_watchlist.map(function(ev,index){
-                    return(
-                        <ListGroupItem key={'watcheventKey' + index}>
-                            <ListEvents ename={ev.name}
-                            edesc={ev.desc}
-                            edate={ev.date}
-                            eloc={ev.location} />
-                        </ListGroupItem>
-                    )
-                })}                
-            </ListGroup> 
+                <Col smOffset={1}>
+                    <ListGroup style={{borderRadius: '10px'}}>
+                        {event_watchlist.map(function(ev,index){
+                            return(
+                                <ListGroupItem key={'watcheventKey' + index}>
+                                    <ListEvents ename={ev.name}
+                                    edesc={ev.desc}
+                                    edate={ev.date}
+                                    eloc={ev.location} />
+                                </ListGroupItem>
+                            )
+                        })}                
+                    </ListGroup> 
+                </Col>
             </Row>
         </Grid>
             </div>

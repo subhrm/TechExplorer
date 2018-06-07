@@ -116,12 +116,12 @@ class Home extends React.Component{
      
         // Hardcoging till the API gets functional
         var tech_list = [
-            {id: 9999, name: 'All'},
-            {id: 1002, name: 'IOT'},
-            {id: 1003, name: 'Blockchain'},
-            {id: 1004, name: 'Cloud'},
-            {id: 1005, name: 'AI/ML'},
-            {id: 1006, name: 'football'}
+            'All',
+            'IOT',
+            'Blockchain',
+            'Cloud',
+            'AI/ML',
+            'football'
         ]
         var technology_list = [...(tech_list)];
       
@@ -208,7 +208,7 @@ class Home extends React.Component{
             </div>
             <select onChange={this.onTechChange.bind(this)} className="form-control" name="tech">
                     {this.state.technology_list.map((option,index) => {
-                            return (<option value={option.name} key={index + option.name} >{option.name}</option>)
+                            return (<option value={option} key={index + option} >{option}</option>)
                     })}
             </select>            
         </Col>

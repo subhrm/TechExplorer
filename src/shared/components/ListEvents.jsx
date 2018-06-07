@@ -32,7 +32,7 @@ class ListEvents extends React.Component{
         return(<div id='div_watchlistevents'>
                     <Grid>
                         <Row>
-                            <Col sm={3} smOffset={1}>
+                            <Col sm={3} >
                                 <div style={styleobj.style_border}>
                                     <br/>image
                                 </div>

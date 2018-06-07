@@ -5,6 +5,11 @@ import Events from './Events.jsx';
 import Actions from '../actions/Actions.js';
 import AppStore from '../stores/AppStore.js';
 
+var logmodule = require("./../Helper/log.js");
+var log = logmodule.log;
+const INFO = logmodule.INFO_LOG;
+const DEBUG = logmodule.DEBUG_LOG;
+
 var event_list = [
     {
         name: "Event1",
@@ -57,16 +62,31 @@ var event_list = [
 ]
 
 var tech_list = [
-    {id: 9999, name: 'All'},
-    {id: 1002, name: 'IOT'},
-    {id: 1003, name: 'Blockchain'},
-    {id: 1004, name: 'Cloud'},
-    {id: 1005, name: 'AI/ML'}
+    'All',
+    'IOT',
+    'Blockchain',
+    'Cloud',
+    'AI/ML'
 ]
 
 var category_list = [
     'All','Webex', 'Seminars', 'Meetings', 'Workshops'
 ]
+
+const styleobj = {
+    style_event : {
+             padding: '10px'
+        },
+
+    nav_style : {
+        backgroundColor : '#f2f2f2',
+        padding: '10px'
+        },
+    
+    tech_style : {
+        fontSize : '28px'
+        }
+};
 
 class BrowseEvents extends React.Component{
 
@@ -78,17 +98,15 @@ class BrowseEvents extends React.Component{
                         otherbtnstyle : "primary",
                         toggle : "user",
                         location: 'All',
-                        events: [],
-                        event_locations: [],
                         category: 'All',
-                        technology: [
-                                        {
-                                            id: 9999,
-                                            name: "All"
-                                        }
-                                    ],
+                        technology: 'All',
+                        preferences: [],
+                        events: [],
                         technology_list: [],
+                        complete_technology_list : [],
+                        event_locations: [],
                         event_categories: [],
+                        based_on_interest: false
                     };
 
         this.fntoggle = this.fntoggle.bind(this);
@@ -99,22 +117,32 @@ class BrowseEvents extends React.Component{
         this.onTechChange = this.onTechChange.bind(this);
     }
 
+    // Retrieve list of events for initial render
+    componentWillMount() {
+        this.state.events = AppStore._getAllEvents();
+
+        var userobj = AppStore._getUserObj();
+        this.setState({
+            preferences: userobj.technologies
+        })
+    }
+
     // Register with App store on component mount
     componentDidMount() {
-        // AppStore.addChangeListener(this._onChange);
+        AppStore.addChangeListener(this._onChange);
+
+        // load categories & technologies
+        this.loadcategories();
+        this.loadtechnologies();        
 
         // Function to locations of events available
-        this.loadLocations();
-        this.loadtechnologies();
+        this.loadLocations(); 
 
-        // Fetch events by (Interests/Categories)
-        // Actions.FetchEventsByTech("enter user interests here");
-        // the above action might based on the BE service provided
     }
 
     //De-Register with App store on component unmount
 	componentWillUnmount(){
-		// AppStore.removeChangeListener(this._onChange);
+		AppStore.removeChangeListener(this._onChange);
     }
 
     // Function to handle the change event from the store
@@ -123,22 +151,34 @@ class BrowseEvents extends React.Component{
 
         this.state.events = AppStore._getEvents();
         this.setState(this.state);
+        //log("Updated this.state.events: " + JSON.stringify(this.state.events['future_events']),DEBUG);
     }
     
+    loadcategories(){        
+        var category_list = [];        
+        var category_obj_list = AppStore._getCategories();
+        if(category_obj_list){
+            category_obj_list.map( category_obj => {category_list.push(category_obj.name)});
+        }
+        // Hardcoding till API gets functional
+        category_list = [ 'All','Webex', 'Seminars', 'Meetings', 'Workshops'  ];
+
+        this.state.category_list = category_list;
+        this.setState(this.state);
+    }
+
     //Function to extract list of locations from event list
     loadLocations() {
         var temp_arr = [];
-        event_list.map(function(event) {
-            temp_arr.push(event.location)
-        });
-        /* Returning list of events from the Store
-                this.state.events.map(function(event) {
+        // Returning list of events from the Store
+        var all_events = this.state.events['future_events'];
+                all_events.map(function(event) {
                     temp_arr.push(event.location)
                 });
-        */
+        
         var temp_location = new Set(temp_arr);
         temp_arr = ['All',...temp_location];
-        console.log(temp_arr);
+        log("Locations of all events: " + JSON.stringify(temp_arr), DEBUG);
         this.setState({event_locations: temp_arr});
     }
 
@@ -150,29 +190,34 @@ class BrowseEvents extends React.Component{
     }
 
     loadtechnologies() {
-        var tp_arr = [];
-        /*
-        tech_list.forEach(function(tech) {    
-            tp_arr.push(tech.name);
-        })*/
-        tp_arr = [...(tech_list)];
+        var technology_list = [];        
+        var technology_list = AppStore._getTechnologies();
+
+        // Hardcoging till the API gets functional
+        var tech_list = [
+            'All',
+            'IOT',
+            'Blockchain',
+            'Cloud',
+            'AI/ML',
+            'football'
+        ]
+
+        var technology_list = [...(tech_list)];
         console.log(tp_arr);        
-        this.setState({technology_list: tp_arr});
+        this.setState({
+            technology_list: ['All',...this.state.preferences],
+            complete_technology_list: technology_list
+        });
         console.log(this.state.technology_list);
     }
 
     // Function to set the TECHNOLOGY criteria to fetch specified events
     onTechChange(e) {
-        var id = e.target.value.slice(0,4);
-        var name = e.target.value.slice(4);
         this.setState({
-            technology : { 
-                            id: id,
-                            name: name
-                         }  
+            technology : e.target.value  
         });
         console.log(this.state.technology);
-        // Actions.FetchEventsByTech(this.state.technology);
     }
 
     // Function to set the CATEGORY criteria to fetch specified events
@@ -190,12 +235,20 @@ class BrowseEvents extends React.Component{
             this.state.otherbtnstyle = "default";
 
             // Unset the Filters HERE
+            this.state.technology_list = this.state.complete_technology_list;
+            this.based_on_interest = false;
+            log("TEchnology_list: " + JSON.stringify(this.state.technology_list), DEBUG);
+
         }else{
             this.state.toggle = "user";
             this.state.allbtnstyle ="default";
             this.state.otherbtnstyle = "primary";
 
             // Set the Filters HERE based on user's interests
+            this.state.technology_list = this.state.preferences;
+            this.based_on_interest = true;
+            log("TEchnology_list: " + JSON.stringify(this.state.technology_list), DEBUG);
+
         }
         this.setState(this.state);
     }
@@ -204,19 +257,58 @@ class BrowseEvents extends React.Component{
         var self = this;
         var location_options = this.state.event_locations;
         var location = this.state.location;
-        var filtered_events = [];
+        var tech = this.state.technology;
+        log("Tech value: " + JSON.stringify(this.state.technology), DEBUG);
+        var cat = this.state.category;
+        var all_events = this.state.events;
+        var location_filtered_events = [];
+        var category_filtered_events = [];
+        var filtered_eventlist = [];
 
+        //Filtering by location
         if(location == 'All') {
-            filtered_events = event_list; //this.state.events;
-            console.log(filtered_events);
+            location_filtered_events = all_events.future_events; //this.state.events;
+            //log("Filtered events by location, option = All: " + JSON.stringify(location_filtered_events),DEBUG);
         } else {
-            //filtered_events = this.state.events.filter(ev => ev.location == location);
-            filtered_events = event_list.filter(ev => ev.location == location);
-            console.log(filtered_events);
+            location_filtered_events = all_events.future_events.filter(ev => ev.location == location);
+            //log("Filtered events by location, option = " + location + " : " + JSON.stringify(location_filtered_events),DEBUG);
         }
+
+        
+        //Filtering by Category
+        if(cat == 'All') {
+            category_filtered_events = location_filtered_events; //this.state.category;
+            //log("Filtered events by location & category, option = All: " + JSON.stringify(category_filtered_events),DEBUG);
+        } else {
+            category_filtered_events = location_filtered_events.filter(ev => ev.category == cat);
+            //log("Filtered events by location & category, option = " + location + " : " + JSON.stringify(category_filtered_events),DEBUG);
+        }
+        
+
+        //Filtering events by technology
+        if(tech == 'All') {
+            filtered_eventlist = category_filtered_events; //this.state.technology;
+            //log("Filtered events, option = All: " + JSON.stringify(filtered_eventlist),DEBUG);
+        } else {
+            filtered_eventlist = category_filtered_events.filter(ev => ev.technology == tech);
+            //log("Filtered events, option = " + location + " : " + JSON.stringify(filtered_eventlist),DEBUG);
+        }
+
+        //Filtering based on interest
+        if(this.state.based_on_interest == true) {
+            filtered_eventlist.filter(ev => {
+                                                this.state.technology.forEach(element => ev.technology == element);
+                                            }
+                                        );  
+            log("Filtered events, option = : " + JSON.stringify(filtered_eventlist),DEBUG);
+        } else {
+            filtered_eventlist = filtered_eventlist;
+            log("Filtered events, option = : " + JSON.stringify(filtered_eventlist),DEBUG);
+        }
+
         return(
             <div id="div_BrowseEvents">
-        <Grid style={{margin : '0px', padding : '0px', width : '100%'}}>
+        <Grid style={{margin : '0px', padding : '0px', width : '100%'}} >
             
             <Row>
 
@@ -260,7 +352,7 @@ class BrowseEvents extends React.Component{
                     </div>
                     <select onChange={this.onTechChange.bind(this)} className="form-control" name="tech">
                             {this.state.technology_list.map((option,index) => {
-                                    return (<option value={option.id+option.name} key={index + option.name} >{option.name}</option>)
+                                    return (<option value={option} key={index + option} >{option}</option>)
                             })}
                     </select>
                 </Col>
@@ -269,23 +361,19 @@ class BrowseEvents extends React.Component{
 
         </Grid>
         <br/>
-        <Grid>
+        <Grid fluid>
             <Row>
-                {filtered_events.map(function(events,index){
-                        return ( 
-                            <Col sm={6} md={4} lg={3} key={'eventKey' + index} style={{padding: '10px'}}>
-                                <span style={{ cursor :'pointer'}}
-                                        onClick={ ()=> {self.props.history.push('/eventdetails/' + events.id)}}>
-                                    <Events ename={events.name}
-                                            edesc={events.desc}
-                                            edate={events.date}
-                                            eloc={events.location} 
-                                    />
-                                </span>
+                {filtered_eventlist.map(function(events,index){
+                        return(
+                            <Col sm={6} md={4} lg={3} key={'eventKey' + index} style={styleobj.style_event}>
+                                    <Events ename={events.event_name}
+                                    edesc={events.description}
+                                    edate={events.start_date_time}
+                                    eloc={events.location} />
                             </Col>                                
-                            )
-                        })
+                        )
                     }
+                )}
             </Row>
         </Grid>
             </div>
