@@ -259,7 +259,7 @@ function Logout(){
     log("returned from Ajax Helper : logout", DEBUG);
     log(JSON.stringify(data), DEBUG);
 
-    if(data && data.status == "success"){
+    if(data && data.status == "200"){
 
         log("User Logged out successfully", INFO);
         // Clear the Global data
@@ -269,11 +269,6 @@ function Logout(){
         // Clear the session data
         sessionStorage.clear();
     }
-
-// TEST data till API gets to proper state    
-_validuser = false;
-_userobj = null;
-sessionStorage.clear();
 }
 
 // Function to save the user profile

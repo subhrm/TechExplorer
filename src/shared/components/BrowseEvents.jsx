@@ -274,10 +274,14 @@ class BrowseEvents extends React.Component{
                 {filtered_events.map(function(events,index){
                         return ( 
                             <Col sm={6} md={4} lg={3} key={'eventKey' + index} style={{padding: '10px'}}>
+                                <span style={{ cursor :'pointer'}}
+                                        onClick={ ()=> {self.props.history.push('/eventdetails/' + events.id)}}>
                                     <Events ename={events.name}
-                                    edesc={events.desc}
-                                    edate={events.date}
-                                    eloc={events.location} />
+                                            edesc={events.desc}
+                                            edate={events.date}
+                                            eloc={events.location} 
+                                    />
+                                </span>
                             </Col>                                
                             )
                         })

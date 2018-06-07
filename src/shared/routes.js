@@ -11,6 +11,7 @@ import WatchList from './components/WatchList.jsx';
 import Profile from './components/Profile.jsx';
 import BrowseEvents from './components/BrowseEvents.jsx';
 import SearchResults from './components/SearchResults.jsx';
+import EventDetails from './components/EventDetails.jsx';
 
 var Routes = [
     {
@@ -52,6 +53,11 @@ var Routes = [
     {
         path : '/search/:pattern',
         component : SearchResults
+    },
+
+    {
+        path : '/eventdetails/:eventobj',
+        component : EventDetails
     }
 ];
 
