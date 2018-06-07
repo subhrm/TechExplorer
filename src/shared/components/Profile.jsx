@@ -65,7 +65,7 @@ class Profile extends React.Component{
         }
 
         var alltechnologies = [];
-        //var alltechnologiesobj = AppStore._getTechnologies();
+        var alltechnologiesobj = AppStore._getTechnologies();
         //alltechnologies = alltechnologiesobj.list;
         var alltechnologies = ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS", "node JS", "React Native", "Spring", "Hadoop"];
         this.state.alltechnologies = alltechnologies;

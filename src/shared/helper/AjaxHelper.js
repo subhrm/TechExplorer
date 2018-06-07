@@ -13,9 +13,10 @@ function PostRequest(path, reqdata){
   $.ajax({
             url:url,
             type:'POST',
-            data:reqdata,
+            data:JSON.stringify(reqdata),
             contentType:'application/json',
             async:false,
+            dataType: 'json',
             success:function(retObj){
                 data=retObj;
             },
@@ -34,8 +35,9 @@ function GetRequest(path, reqdata){
               url:url,
               type:'GET',
               contentType:'application/json',
-              data:reqdata,
+              data:JSON.stringify(reqdata),
               async:false,
+              dataType: 'json',
               success:function(retObj){
                   data=retObj;
               },
@@ -54,8 +56,9 @@ function PutRequest(path, reqdata){
               url:url,
               type:'PUT',
               contentType:'application/json',
-              data:reqdata,
+              data:JSON.stringify(reqdata),
               async:false,
+              dataType: 'json',
               success:function(retObj){
                   data=retObj;
               },
@@ -76,8 +79,9 @@ module.exports={
     logout:PostRequest,
     getuserpreferences:PostRequest,
     getuserwatchlist:PostRequest,
+    checkemail:PostRequest,
 
     getcategories:GetRequest,
     gettechnologies:GetRequest,
-    checkemail:GetRequest
+
 }
