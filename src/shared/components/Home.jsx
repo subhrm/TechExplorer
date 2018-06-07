@@ -73,7 +73,8 @@ var tech_list = [
     {id: 1002, name: 'IOT'},
     {id: 1003, name: 'Blockchain'},
     {id: 1004, name: 'Cloud'},
-    {id: 1005, name: 'AI/ML'}
+    {id: 1005, name: 'AI/ML'},
+    {id: 1006, name: 'football'}
 ]
 
 const styleobj = {
@@ -98,12 +99,7 @@ class Home extends React.Component{
         this.state =    {
                             location: 'All',
                             category: 'All',
-                            technology: [
-                                            {
-                                                id: 9999,
-                                                name: "All"
-                                            }
-                                        ],
+                            technology: 'All',
                             technology_list: [],
                             events: [],
                             event_locations: [],
@@ -190,13 +186,10 @@ class Home extends React.Component{
 
     // Function to set the TECHNOLOGY criteria to fetch specified events
     onTechChange(e) {
-        var id = e.target.value.slice(0,4);
-        var name = e.target.value.slice(4);
+        //var id = e.target.value.slice(0,4);
+        //var name = e.target.value.slice(4);
         this.setState({
-            technology : { 
-                            id: id,
-                            name: name
-                         }  
+            technology : e.target.value  
         });
         console.log(this.state.technology);
         // Actions.FetchEventsByTech(this.state.technology);
@@ -214,19 +207,41 @@ class Home extends React.Component{
         var location_options = this.state.event_locations;
         var location = this.state.location;
         var tech = this.state.technology;
+        log("Tech value: " + JSON.stringify(this.state.technology), DEBUG);
+        var cat = this.state.category;
         var all_events = this.state.events;
-        var filtered_events = [];
+        var location_filtered_events = [];
+        var category_filtered_events = [];
+        var filtered_eventlist = [];
 
+        //Filtering by location
         if(location == 'All') {
-            filtered_events = all_events.future_events; //this.state.events;
-            log("Filtered events, option = All: " + JSON.stringify(filtered_events),DEBUG);
-            log("Type of filtered events: " + typeof(filtered_events), DEBUG);
+            location_filtered_events = all_events.future_events; //this.state.events;
+            log("Filtered events by location, option = All: " + JSON.stringify(location_filtered_events),DEBUG);
         } else {
-            //filtered_events = this.state.events.filter(ev => ev.location == location);
-            filtered_events = all_events.future_events.filter(ev => ev.location == location);
-            log("Filtered events, option = " + location + " : " + JSON.stringify(filtered_events),DEBUG);
+            location_filtered_events = all_events.future_events.filter(ev => ev.location == location);
+            log("Filtered events by location, option = " + location + " : " + JSON.stringify(location_filtered_events),DEBUG);
         }
 
+        
+        //Filtering by Category
+        if(cat == 'All') {
+            category_filtered_events = location_filtered_events; //this.state.category;
+            log("Filtered events by location & category, option = All: " + JSON.stringify(category_filtered_events),DEBUG);
+        } else {
+            category_filtered_events = location_filtered_events.filter(ev => ev.category == cat);
+            log("Filtered events by location & category, option = " + location + " : " + JSON.stringify(category_filtered_events),DEBUG);
+        }
+        
+
+        //Filtering events by technology
+        if(tech == 'All') {
+            filtered_eventlist = category_filtered_events; //this.state.technology;
+            log("Filtered events, option = All: " + JSON.stringify(filtered_eventlist),DEBUG);
+        } else {
+            filtered_eventlist = category_filtered_events.filter(ev => ev.technology == tech);
+            log("Filtered events, option = " + location + " : " + JSON.stringify(filtered_eventlist),DEBUG);
+        }
 
         return(
             <div id="div_home">
@@ -241,7 +256,7 @@ class Home extends React.Component{
             </div>
             <select onChange={this.onTechChange.bind(this)} className="form-control" name="tech">
                     {this.state.technology_list.map((option,index) => {
-                            return (<option value={option.id+option.name} key={index + option.name} >{option.name}</option>)
+                            return (<option value={option.name} key={index + option.name} >{option.name}</option>)
                     })}
             </select>
             
@@ -278,7 +293,7 @@ class Home extends React.Component{
     </Row>
     <Row style={{padding: '5px'}}>
     
-        {filtered_events.map(function(events,index){
+        {filtered_eventlist.map(function(events,index){
                 return(
                     <Col sm={6} md={4} lg={3} key={'eventKey' + index} style={styleobj.style_event}>
                             <Events ename={events.event_name}
