@@ -70,4 +70,18 @@ module.exports={
     })
   },
 
+  GetTechnologies:function(){
+    Dispatcher.dispatch({
+      type:AppConstants.GETTECHNOLOGIES,
+      data:""
+    })
+  },
+
+  GetCategories:function(){
+    Dispatcher.dispatch({
+      type:AppConstants.GETCATEGORIES,
+      data:""
+    })
+  },
+
 }

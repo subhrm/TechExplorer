@@ -4,7 +4,14 @@ import { Navbar, NavbarBrand, NavbarCollapse, NavbarToggle, NavbarHeader } from 
 import Select from 'react-select';
 
 import Events from './Events.jsx';
+import Actions from '../actions/Actions.js';
 import AppStore from '../stores/AppStore.js';
+
+var logmodule = require("./../Helper/log.js");
+var log = logmodule.log;
+const INFO = logmodule.INFO_LOG;
+const DEBUG = logmodule.DEBUG_LOG;
+
 
 var event_list = [
     {
@@ -69,8 +76,6 @@ var tech_list = [
     {id: 1005, name: 'AI/ML'}
 ]
 
-
-
 const styleobj = {
     style_event : {
              padding: '10px'
@@ -113,9 +118,17 @@ class Home extends React.Component{
         this._onChange = this._onChange.bind(this);
     }
 
+    // Retrieve list of events for initial render
+    componentWillMount() {
+        AppStore.addChangeListener(this._onChange);
+        Actions.FetchEvents();
+    }
     // Register with App store on component mount
     componentDidMount() {
         AppStore.addChangeListener(this._onChange);
+
+        Actions.GetCategories();
+        Actions.GetTechnologies();
 
         // Function to locations of events available
         this.loadLocations();
@@ -134,22 +147,24 @@ class Home extends React.Component{
 
         this.state.events = AppStore._getEvents();
         this.setState(this.state);
+        log("Updated this.state.events: " + JSON.stringify(this.state.events['future_events']),DEBUG);
 	} 
 
     //Function to extract list of locations from event list
     loadLocations() {
         var temp_arr = [];
-        event_list.map(function(event) {
+        /*event_list.map(function(event) {
             temp_arr.push(event.location)
-        });
-        /* Returning list of events from the Store
-                this.state.events.map(function(event) {
+        });*/
+        // Returning list of events from the Store
+        var all_events = this.state.events['future_events'];
+                all_events.map(function(event) {
                     temp_arr.push(event.location)
                 });
-        */
+        
         var temp_location = new Set(temp_arr);
         temp_arr = ['All',...temp_location];
-        console.log(temp_arr);
+        log("Locations of all events: " + JSON.stringify(temp_arr), DEBUG);
         this.setState({event_locations: temp_arr});
     }
 
@@ -170,6 +185,7 @@ class Home extends React.Component{
         this.setState({
           location: e.target.value
         })
+        log("AFTER LOCATION CHANGE: " + JSON.stringify(this.state.location), DEBUG);
       }
 
     // Function to set the TECHNOLOGY criteria to fetch specified events
@@ -198,15 +214,17 @@ class Home extends React.Component{
         var location_options = this.state.event_locations;
         var location = this.state.location;
         var tech = this.state.technology;
+        var all_events = this.state.events;
         var filtered_events = [];
 
         if(location == 'All') {
-            filtered_events = event_list; //this.state.events;
-            console.log(filtered_events);
+            filtered_events = all_events.future_events; //this.state.events;
+            log("Filtered events, option = All: " + JSON.stringify(filtered_events),DEBUG);
+            log("Type of filtered events: " + typeof(filtered_events), DEBUG);
         } else {
             //filtered_events = this.state.events.filter(ev => ev.location == location);
-            filtered_events = event_list.filter(ev => ev.location == location);
-            console.log(filtered_events);
+            filtered_events = all_events.future_events.filter(ev => ev.location == location);
+            log("Filtered events, option = " + location + " : " + JSON.stringify(filtered_events),DEBUG);
         }
 
 
@@ -259,18 +277,18 @@ class Home extends React.Component{
 
     </Row>
     <Row style={{padding: '5px'}}>
-
+    
         {filtered_events.map(function(events,index){
-                return ( 
+                return(
                     <Col sm={6} md={4} lg={3} key={'eventKey' + index} style={styleobj.style_event}>
-                            <Events ename={events.name}
-                            edesc={events.desc}
-                            edate={events.date}
+                            <Events ename={events.event_name}
+                            edesc={events.description}
+                            edate={events.start_date_time}
                             eloc={events.location} />
                     </Col>                                
-                    )
-                })
+                )
             }
+        )}
                     
     </Row>
 </Grid>

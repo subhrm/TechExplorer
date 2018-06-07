@@ -99,6 +99,16 @@ var AppStore = objectAssign({}, BaseStore, {
                 FetchEventsByTech();
                 AppStore.emitChange();
                 break;
+
+            case AppConstants.GETTECHNOLOGIES:
+                GetTechnologies();
+                AppStore.emitChange();
+                break;
+
+            case AppConstants.GETCATEGORIES:
+                GetCategories();
+                AppStore.emitChange();
+                break;
         }
     })
 });
@@ -337,15 +347,17 @@ function SaveProfile(userobj){
 function FetchEvents(){
     log("Inside fn-FetchEvents",DEBUG);
     // DEPENDENCY
-/*      adding /events in SPEC to fetch initial list of events, categories, and technology from Server 
-        var data=AjaxHelper.fetch("/events/list-all-events");
-        log("returned from Ajax Helper", DEBUG);
-        log(JSON.stringify(data), DEBUG);
-        if(data){
-            log("Events : data", INFO);
-            _events = data
-        }
-*/
+    //  adding /events in SPEC to fetch initial list of events, categories, and technology from Server 
+    var data=AjaxHelper.getallevents("/events/list-all-events","");
+    log("returned from Ajax Helper", DEBUG);
+    log(JSON.stringify(data), DEBUG);
+    if(data){
+        // log("Events : " + JSON.stringify(data), INFO);
+        _events = data;
+        return _events;
+    }
+}
+
 
 // Function to retrieve events by TECHNOLOGY
 function FetchEventsByTech(techobj){
@@ -358,6 +370,7 @@ function FetchEventsByTech(techobj){
         if(data){
             log("Events : data", INFO);
             _events = data
+            return -events;
         }
 */}
 
@@ -372,7 +385,8 @@ function FetchEventsByCat(techobj){
         log(JSON.stringify(data), DEBUG);
         if(data){
             log("Events : data", INFO);
-            _events = data
+            _events = data;
+            return -events;
         }
 */}
 
@@ -398,8 +412,6 @@ function GetCategories(){
         _allcategories = data.categories;
         return _allcategories;    
     }
-}
-
 }
 
 module.exports=AppStore;

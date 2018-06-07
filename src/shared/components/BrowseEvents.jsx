@@ -2,6 +2,7 @@ import React from 'react';
 import { Panel, Grid, Row, Col, Button, ButtonGroup } from 'react-bootstrap';
 
 import Events from './Events.jsx';
+import Actions from '../actions/Actions.js';
 import AppStore from '../stores/AppStore.js';
 
 var event_list = [

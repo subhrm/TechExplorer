@@ -77,6 +77,7 @@ module.exports={
     getuserpreferences:PostRequest,
     getuserwatchlist:PostRequest,
 
+    getallevents:GetRequest,
     getcategories:GetRequest,
     gettechnologies:GetRequest,
     checkemail:GetRequest
