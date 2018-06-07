@@ -1,9 +1,15 @@
 var $ = require('jquery');
 const HostURL = "http://10.74.18.40:5000";
 
+var logmodule = require("./../Helper/log.js");
+var log = logmodule.log;
+const INFO = logmodule.INFO_LOG;
+const DEBUG = logmodule.DEBUG_LOG;
+
 function PostRequest(path, reqdata){
   var data;
   var url = HostURL + path;
+  log("PostRequest to [" + url + "] with reqbody :[" + JSON.stringify(reqdata)+"]");
   $.ajax({
             url:url,
             type:'POST',
@@ -23,6 +29,7 @@ function PostRequest(path, reqdata){
 function GetRequest(path, reqdata){
     var data;
     var url = HostURL + path;
+    log("GetRequest to [" + url + "] with reqbody :[" + JSON.stringify(reqdata)+"]");
     $.ajax({
               url:url,
               type:'GET',
@@ -42,6 +49,7 @@ function GetRequest(path, reqdata){
 function PutRequest(path, reqdata){
     var data;
     var url = HostURL + path;
+    log("PutRequest to [" + url + "] with reqbody :[" + JSON.stringify(reqdata)+"]");
     $.ajax({
               url:url,
               type:'PUT',
@@ -66,6 +74,8 @@ module.exports={
     saveprofile:PostRequest,
     savepreferences:PostRequest,
     logout:PostRequest,
+    getuserpreferences:PostRequest,
+    getuserwatchlist:PostRequest,
 
     getcategories:GetRequest,
     gettechnologies:GetRequest,

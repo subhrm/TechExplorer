@@ -138,19 +138,37 @@ function Signup(userobj){
     log(JSON.stringify(userobj), DEBUG);
     _UserSaved = false;
 
+    // Hardcoding time zone for time being
     var reqobj = {
-                    "id" : userobj.email,
                     "name" : userobj.username,
+                    "email" : userobj.email,                    
                     "password" : userobj.password,
-                    "email" : userobj.email,
+                    "time_zone" : "+5:30"
                 };
+    log("request object is : " + JSON.stringify(reqobj), DEBUG);
     // AJAX Call to the server API to save the user in DB
     var data = AjaxHelper.signup("/user", reqobj);
     log("returned from Ajax Helper:signup", DEBUG);
     log(JSON.stringify(data), DEBUG);
-    if(data && data.status == "success"){
-        log("Signup : Data Saved Successfully", INFO);
-        _UserSaved = true;
+    //if(data && data.status == "success"){
+    if(data && data.token){        
+        log("Signup : User Data Saved Successfully", INFO);
+        //_UserSaved = true;
+
+        var usertoken = data.token;
+        var reqobj = {
+                        "email" : userobj.email,
+                        "token" : usertoken,
+                        "preferences" : userobj.technologies
+                    };
+
+        var data = AjaxHelper.savepreferences("/actions/update-user-preferences", reqobj);
+        log("returned from Ajax Helper:savepreferences", DEBUG);
+        log(JSON.stringify(data), DEBUG);
+        if(data && data.status == "success"){
+            log("Signup : User Preferences saved Successfully", INFO);
+            _UserSaved = true;
+        }
     }else{
         log("Signup : Unable to save the data to DB", INFO);
         _UserSaved = false;
@@ -171,7 +189,7 @@ function ValidateCredentials(userobj){
     }
     else{
         var reqobj = {
-                        "id" : userobj.email,
+                        "email" : userobj.email,
                         "password" : userobj.password
                     };
 
@@ -188,11 +206,33 @@ function ValidateCredentials(userobj){
 
             _validuser = true;
             _userobj = {
-                username : data.full_name,
-                email : data.id,
+                username : data.name,
+                email : data.email_id,
+                time_zone : data.time_zone,
                 technologies : null,
                 watchlist : null
             };
+
+            req_obj = {
+                        email : _userobj.email,
+                        token : data.token
+                    };
+
+            // Get the user preferences from the API
+            var data=AjaxHelper.getuserpreferences("/actions/get-user-preferences",reqobj);
+            log("returned from Ajax Helper : getuserpreferences", DEBUG);
+            log(JSON.stringify(data), DEBUG);
+            if(data && data.preferences ){
+                _userobj.technologies = data.preferences;
+            }
+
+            // Get the user watch list from API            
+            var data=AjaxHelper.getuserwatchlist("/actions/get-watch-list",reqobj);
+            log("returned from Ajax Helper : getuserwatchlist", DEBUG);
+            log(JSON.stringify(data), DEBUG);
+            if(data && data.events ){
+                _userobj.watchlist = data.events;
+            }
         }
     
 // Test data     
@@ -213,7 +253,7 @@ function Logout(){
     log("Inside the function Logout", DEBUG);
 
     var reqobj = {
-                    "id" : sessionStorage.getItem("username"),
+                    "email" : sessionStorage.getItem("username"),
                     "token" : sessionStorage.getItem("usertoken")
                 };
     // CALL API for logout 
