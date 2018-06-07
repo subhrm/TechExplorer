@@ -50,7 +50,7 @@ var AppStore = objectAssign({}, BaseStore, {
         if(_alltechnologies){
             return _alltechnologies;
         }else{
-            return(GetTechnologies);
+            return(GetTechnologies());
         }
     },
 
@@ -58,7 +58,7 @@ var AppStore = objectAssign({}, BaseStore, {
         if(_allcategories){
             return _allcategories;
         }else{
-            return(GetCategories);
+            return(GetCategories());
         }
     },    
 
@@ -148,22 +148,21 @@ function Signup(userobj){
     log(JSON.stringify(userobj), DEBUG);
     _UserSaved = false;
 
-    // Hardcoding time zone for time being
+    // Hardcoding time zone for time being 
     var reqobj = {
                     "name" : userobj.username,
                     "email" : userobj.email,                    
                     "password" : userobj.password,
                     "time_zone" : "+5:30"
                 };
-    log("request object is : " + JSON.stringify(reqobj), DEBUG);
+
     // AJAX Call to the server API to save the user in DB
     var data = AjaxHelper.signup("/user", reqobj);
     log("returned from Ajax Helper:signup", DEBUG);
     log(JSON.stringify(data), DEBUG);
-    //if(data && data.status == "success"){
+
     if(data && data.token){        
         log("Signup : User Data Saved Successfully", INFO);
-        //_UserSaved = true;
 
         var usertoken = data.token;
         var reqobj = {
@@ -175,7 +174,7 @@ function Signup(userobj){
         var data = AjaxHelper.savepreferences("/actions/update-user-preferences", reqobj);
         log("returned from Ajax Helper:savepreferences", DEBUG);
         log(JSON.stringify(data), DEBUG);
-        if(data && data.status == "success"){
+        if(data && data.status == "200"){
             log("Signup : User Preferences saved Successfully", INFO);
             _UserSaved = true;
         }
@@ -192,7 +191,6 @@ function ValidateCredentials(userobj){
 
     _validuser = false;
     sessionStorage.clear();
-    //sessionStorage.removeItem("username");
 
     if(userobj.email == "" || userobj.password == ""){
         log("ValidateCredentials : Invalid user", INFO);
@@ -207,6 +205,7 @@ function ValidateCredentials(userobj){
         var data=AjaxHelper.login("/user/login",reqobj);
         log("returned from Ajax Helper", DEBUG);
         log(JSON.stringify(data), DEBUG);
+
         if(data && data.token ){
             log("ValidateCredentials : Valid user", INFO);
 
@@ -223,13 +222,13 @@ function ValidateCredentials(userobj){
                 watchlist : null
             };
 
-            req_obj = {
+            var req_obj = {
                         email : _userobj.email,
                         token : data.token
                     };
 
             // Get the user preferences from the API
-            var data=AjaxHelper.getuserpreferences("/actions/get-user-preferences",reqobj);
+            var data=AjaxHelper.getuserpreferences("/actions/get-user-preferences",req_obj);
             log("returned from Ajax Helper : getuserpreferences", DEBUG);
             log(JSON.stringify(data), DEBUG);
             if(data && data.preferences ){
@@ -237,24 +236,13 @@ function ValidateCredentials(userobj){
             }
 
             // Get the user watch list from API            
-            var data=AjaxHelper.getuserwatchlist("/actions/get-watch-list",reqobj);
+            var data=AjaxHelper.getuserwatchlist("/actions/get-watch-list",req_obj);
             log("returned from Ajax Helper : getuserwatchlist", DEBUG);
             log(JSON.stringify(data), DEBUG);
             if(data && data.events ){
                 _userobj.watchlist = data.events;
             }
-        }
-    
-// Test data     
-_validuser = true;
-sessionStorage.setItem("username","ramana@infosys.com");
-_userobj = {
-                username : "Ramana",
-                email : "ramana@infosys.com",
-                technologies : ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS"],
-                watchlist : []
-        };
-     
+        }     
     }
 }
 
@@ -297,21 +285,18 @@ function SaveProfile(userobj){
     if(userobj.preferencesupdate){
 
         var reqobj = {
-                    "id" : sessionStorage.getItem("username"),
+                    "email" : sessionStorage.getItem("username"),
                     "token" : sessionStorage.getItem("usertoken"),
-                    "list" : userobj.technologies
+                    "preferences" : userobj.technologies
                 };
 
         // AJAX Call to the server API to save the user in DB
         var data = AjaxHelper.savepreferences("/actions/update-user-preferences", reqobj);
         log("returned from Ajax Helper:savepreferences", DEBUG);
         log(JSON.stringify(data), DEBUG);
-        if(data && data.status == "success"){
+        if(data && data.status == "200"){
             _userobj.technologies = userobj.technologies;
         }
-
-        // Test Data till API gets functional
-        _userobj.technologies = userobj.technologies;
     }
 
     if(userobj.profileupdate){
@@ -357,7 +342,6 @@ function FetchEvents(){
         return _events;
     }
 }
-
 
 // Function to retrieve events by TECHNOLOGY
 function FetchEventsByTech(techobj){

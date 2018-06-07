@@ -96,10 +96,9 @@ class Signup extends React.Component{
         AppStore.addChangeListener(this._onChange);	
 
         // Get the initial data from the AppStore
-        //var technologies = AppStore._getTechnologies();
         var technologies = [];
         var alltechnologies = [];
-        //var alltechnologiesobj = AppStore._getTechnologies();
+        var alltechnologiesobj = AppStore._getTechnologies();
         //alltechnologies = alltechnologiesobj.list;
         var alltechnologies = ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS", "node JS", "React Native", "Spring", "Hadoop"];
 
