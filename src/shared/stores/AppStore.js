@@ -47,7 +47,7 @@ var AppStore = objectAssign({}, BaseStore, {
     },
 
     _getTechnologies:function(){
-        if(_alltechnologies && _alltechnologies.list){
+        if(_alltechnologies){
             return _alltechnologies;
         }else{
             return(GetTechnologies);
@@ -55,7 +55,7 @@ var AppStore = objectAssign({}, BaseStore, {
     },
 
     _getCategories:function(){
-        if(_allcategories && _allcategories.list ){
+        if(_allcategories){
             return _allcategories;
         }else{
             return(GetCategories);
@@ -383,7 +383,7 @@ function GetTechnologies(){
     log("returned from Ajax Helper : gettechnologies", DEBUG);
     log(JSON.stringify(data), DEBUG);
     if(data){
-        _alltechnologies = data;
+        _alltechnologies = data.technologies;
         return _alltechnologies;
     }
 }
@@ -395,7 +395,7 @@ function GetCategories(){
     log("returned from Ajax Helper : getcategories", DEBUG);
     log(JSON.stringify(data), DEBUG);
     if(data){
-        _allcategories = data;
+        _allcategories = data.categories;
         return _allcategories;    
     }
 }
