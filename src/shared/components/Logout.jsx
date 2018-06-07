@@ -17,12 +17,10 @@ class Logout extends React.Component{
     componentWillMount(){
         log("User Clicked on Logout", INFO);
         log("Navigating to Home page");
-
-        // Call the Logout Action
-        Actions.Logout();
-
         // Navigate to home page programmatically
         this.props.history.push('/');
+        // Call the Logout Action
+        Actions.Logout();
     }
 
     render(){

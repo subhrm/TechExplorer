@@ -99,8 +99,11 @@ class Signup extends React.Component{
         var technologies = [];
         var alltechnologies = [];
         var alltechnologiesobj = AppStore._getTechnologies();
+        alltechnologiesobj.map( obj => {
+            alltechnologies.push(obj.name);
+        });        
         //alltechnologies = alltechnologiesobj.list;
-        var alltechnologies = ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS", "node JS", "React Native", "Spring", "Hadoop"];
+        //var alltechnologies = ["C", "C++", "Java", "Java Script", "MongoDB", "React JS", "Angular JS", "node JS", "React Native", "Spring", "Hadoop"];
 
         this.state.alltechnologies = alltechnologies;
         this.setState(this.state);

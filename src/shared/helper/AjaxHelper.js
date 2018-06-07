@@ -80,9 +80,12 @@ module.exports={
     getuserpreferences:PostRequest,
     getuserwatchlist:PostRequest,
     checkemail:PostRequest,
+    addtowatchlist:PostRequest,
+    removefromwatchlist:PostRequest,
 
     getallevents:GetRequest,
     getcategories:GetRequest,
     gettechnologies:GetRequest,
 
 }
+

@@ -84,4 +84,17 @@ module.exports={
     })
   },
 
+  AddtoWatchList:function(data){
+    Dispatcher.dispatch({
+      type:AppConstants.ADDTOWATCHLIST,
+      data:data
+    })    
+  },
+
+  RemoveFromWatchList:function(data){
+    Dispatcher.dispatch({
+      type:AppConstants.REMOVEFROMWATCHLIST,
+      data:data
+    })    
+  }
 }

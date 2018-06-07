@@ -118,6 +118,17 @@ var AppStore = objectAssign({}, BaseStore, {
                 GetCategories();
                 AppStore.emitChange();
                 break;
+
+            case AppConstants.ADDTOWATCHLIST:
+                AddtoWatchList(action.data);
+                AppStore.emitChange();
+                break;
+
+            case AppConstants.REMOVEFROMWATCHLIST:
+                RemoveFromWatchList(action.data);
+                AppStore.emitChange();
+                break;
+                
         }
     })
 });
@@ -396,7 +407,7 @@ function FetchEventsByCat(techobj){
 // Function to get the technologies list
 function GetTechnologies(){
     log("Inside function GetTechnologies", DEBUG);
-    var data=AjaxHelper.gettechnologies("/event/list-technologies","");
+    var data=AjaxHelper.gettechnologies("/events/list-technologies","");
     log("returned from Ajax Helper : gettechnologies", DEBUG);
     log(JSON.stringify(data), DEBUG);
     if(data){
@@ -408,12 +419,77 @@ function GetTechnologies(){
 // Function to get the technologies list
 function GetCategories(){
     log("Inside function GetCategories", DEBUG);
-    var data=AjaxHelper.getcategories("/event/list-categories","");
+    var data=AjaxHelper.getcategories("/events/list-categories","");
     log("returned from Ajax Helper : getcategories", DEBUG);
     log(JSON.stringify(data), DEBUG);
     if(data){
         _allcategories = data.categories;
         return _allcategories;    
+    }
+}
+
+// Function to add to watchlist
+function AddtoWatchList(dataobj){
+    log("Inside function AddtoWatchList", DEBUG);
+    log(JSON.stringify(dataobj), DEBUG);
+
+    var reqobj = {
+        "email" : sessionStorage.getItem("username"),
+        "token" : sessionStorage.getItem("usertoken"),
+        "event_id" : dataobj.event_id
+    };    
+
+    var data=AjaxHelper.addtowatchlist("/actions/add-to-watch-list",reqobj);
+    log("returned from Ajax Helper : addtowatchlist", DEBUG);
+    log(JSON.stringify(data), DEBUG);
+    if(data && data.status == "200"){
+        log("Succesfully added to user's watchlist");
+
+        // Get the user's new watch list from API    
+        var req_obj = {
+            email : _userobj.email,
+            token : sessionStorage.getItem("usertoken")
+        };                
+        var data=AjaxHelper.getuserwatchlist("/actions/get-watch-list",req_obj);
+        log("returned from Ajax Helper : getuserwatchlist", DEBUG);
+        log(JSON.stringify(data), DEBUG);
+        if(data && data.events ){
+            _userobj.watchlist = data.events;
+        }
+    }else{
+        log("Failed to add to user's watchlist");
+    }
+}
+
+function RemoveFromWatchList(dataobj){
+    log("Inside function RemoveFromWatchList", DEBUG);
+    log(JSON.stringify(dataobj), DEBUG);
+
+    var reqobj = {
+        "email" : sessionStorage.getItem("username"),
+        "token" : sessionStorage.getItem("usertoken"),
+        "event_id" : dataobj.event_id
+    };    
+
+    var data=AjaxHelper.removefromwatchlist("/actions/remove-from-watch-list",reqobj);
+    log("returned from Ajax Helper : removefromwatchlist", DEBUG);
+    log(JSON.stringify(data), DEBUG);
+    if(data && data.status == "200"){
+        log("Succesfully removed from user's watchlist");
+
+        // Get the user's new watch list from API   
+        var req_obj = {
+            email : _userobj.email,
+            token : sessionStorage.getItem("usertoken")
+        };                 
+        var data=AjaxHelper.getuserwatchlist("/actions/get-watch-list",req_obj);
+        log("returned from Ajax Helper : getuserwatchlist", DEBUG);
+        log(JSON.stringify(data), DEBUG);
+        if(data && data.events ){
+            _userobj.watchlist = data.events;
+        }        
+    }else{
+        log("Failed to remove from user's watchlist");
     }
 }
 

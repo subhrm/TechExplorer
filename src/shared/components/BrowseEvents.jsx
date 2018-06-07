@@ -10,69 +10,6 @@ var log = logmodule.log;
 const INFO = logmodule.INFO_LOG;
 const DEBUG = logmodule.DEBUG_LOG;
 
-var event_list = [
-    {
-        name: "Event1",
-        desc: "Good Event for Tech",
-        category: "Webex",
-        subcategory: "IOT",
-        date: "01/06/2018",
-        location: 'Hyderabad'
-    },
-    {
-        name: "Event2",
-        desc: "Good Event for Tech",
-        category: "Seminars",
-        subcategory: "AI/ML",
-        date: "05/06/2018",
-        location: 'Hyderabad'
-    },
-    {
-        name: "Event3",
-        desc: "Good Event for Tech",
-        category: "Webex",
-        subcategory: "Blockchain",
-        date: "01/07/2018",
-        location: 'Bangalore'
-    },
-    {
-        name: "Event4",
-        desc: "Good Event for Tech",
-        category: "Workshops",
-        subcategory: "Cloud",
-        date: "01/08/2018",
-        location: 'Pune'
-    },
-    {
-        name: "Event5",
-        desc: "Good Event for Tech",
-        category: "Meetings",
-        subcategory: "Cloud",
-        date: "01/07/2018",
-        location: 'Bangalore'
-    },
-    {
-        name: "Event6",
-        desc: "Good Event for Tech",
-        category: "Seminars",
-        subcategory: "Blockchain",
-        date: "01/08/2018",
-        location: 'Pune'
-    }
-]
-
-var tech_list = [
-    'All',
-    'IOT',
-    'Blockchain',
-    'Cloud',
-    'AI/ML'
-]
-
-var category_list = [
-    'All','Webex', 'Seminars', 'Meetings', 'Workshops'
-]
-
 const styleobj = {
     style_event : {
              padding: '10px'
@@ -103,6 +40,7 @@ class BrowseEvents extends React.Component{
                         preferences: [],
                         events: [],
                         technology_list: [],
+                        category_list:[],
                         complete_technology_list : [],
                         event_locations: [],
                         event_categories: [],
@@ -129,7 +67,7 @@ class BrowseEvents extends React.Component{
 
     // Register with App store on component mount
     componentDidMount() {
-        AppStore.addChangeListener(this._onChange);
+        //AppStore.addChangeListener(this._onChange);
 
         // load categories & technologies
         this.loadcategories();
@@ -142,7 +80,7 @@ class BrowseEvents extends React.Component{
 
     //De-Register with App store on component unmount
 	componentWillUnmount(){
-		AppStore.removeChangeListener(this._onChange);
+		//AppStore.removeChangeListener(this._onChange);
     }
 
     // Function to handle the change event from the store
@@ -160,8 +98,6 @@ class BrowseEvents extends React.Component{
         if(category_obj_list){
             category_obj_list.map( category_obj => {category_list.push(category_obj.name)});
         }
-        // Hardcoding till API gets functional
-        category_list = [ 'All','Webex', 'Seminars', 'Meetings', 'Workshops'  ];
 
         this.state.category_list = category_list;
         this.setState(this.state);
@@ -178,7 +114,7 @@ class BrowseEvents extends React.Component{
         
         var temp_location = new Set(temp_arr);
         temp_arr = ['All',...temp_location];
-        log("Locations of all events: " + JSON.stringify(temp_arr), DEBUG);
+        //log("Locations of all events: " + JSON.stringify(temp_arr), DEBUG);
         this.setState({event_locations: temp_arr});
     }
 
@@ -192,24 +128,8 @@ class BrowseEvents extends React.Component{
     loadtechnologies() {
         var technology_list = [];        
         var technology_list = AppStore._getTechnologies();
-
-        // Hardcoging till the API gets functional
-        var tech_list = [
-            'All',
-            'IOT',
-            'Blockchain',
-            'Cloud',
-            'AI/ML',
-            'football'
-        ]
-
-        var technology_list = [...(tech_list)];
-        console.log(tp_arr);        
-        this.setState({
-            technology_list: ['All',...this.state.preferences],
-            complete_technology_list: technology_list
-        });
-        console.log(this.state.technology_list);
+        this.state.technology_list = technology_list;
+        //console.log(this.state.technology_list);
     }
 
     // Function to set the TECHNOLOGY criteria to fetch specified events
@@ -217,7 +137,7 @@ class BrowseEvents extends React.Component{
         this.setState({
             technology : e.target.value  
         });
-        console.log(this.state.technology);
+        //console.log(this.state.technology);
     }
 
     // Function to set the CATEGORY criteria to fetch specified events
@@ -225,7 +145,7 @@ class BrowseEvents extends React.Component{
         this.setState({
             category: value
         })
-        console.log(this.state.category)
+        //console.log(this.state.category);
     }
 
     fntoggle(){
@@ -235,9 +155,9 @@ class BrowseEvents extends React.Component{
             this.state.otherbtnstyle = "default";
 
             // Unset the Filters HERE
-            this.state.technology_list = this.state.complete_technology_list;
+            //this.state.technology_list = this.state.complete_technology_list;
             this.based_on_interest = false;
-            log("TEchnology_list: " + JSON.stringify(this.state.technology_list), DEBUG);
+            //log("TEchnology_list: " + JSON.stringify(this.state.technology_list), DEBUG);
 
         }else{
             this.state.toggle = "user";
@@ -247,7 +167,7 @@ class BrowseEvents extends React.Component{
             // Set the Filters HERE based on user's interests
             this.state.technology_list = this.state.preferences;
             this.based_on_interest = true;
-            log("TEchnology_list: " + JSON.stringify(this.state.technology_list), DEBUG);
+            //log("TEchnology_list: " + JSON.stringify(this.state.technology_list), DEBUG);
 
         }
         this.setState(this.state);
@@ -258,7 +178,7 @@ class BrowseEvents extends React.Component{
         var location_options = this.state.event_locations;
         var location = this.state.location;
         var tech = this.state.technology;
-        log("Tech value: " + JSON.stringify(this.state.technology), DEBUG);
+        //log("Tech value: " + JSON.stringify(this.state.technology), DEBUG);
         var cat = this.state.category;
         var all_events = this.state.events;
         var location_filtered_events = [];
@@ -300,65 +220,61 @@ class BrowseEvents extends React.Component{
                                                 this.state.technology.forEach(element => ev.technology == element);
                                             }
                                         );  
-            log("Filtered events, option = : " + JSON.stringify(filtered_eventlist),DEBUG);
+            //log("Filtered events, option = : " + JSON.stringify(filtered_eventlist),DEBUG);
         } else {
             filtered_eventlist = filtered_eventlist;
-            log("Filtered events, option = : " + JSON.stringify(filtered_eventlist),DEBUG);
+            //log("Filtered events, option = : " + JSON.stringify(filtered_eventlist),DEBUG);
         }
 
         return(
             <div id="div_BrowseEvents">
-        <Grid style={{margin : '0px', padding : '0px', width : '100%'}} >
-            
-            <Row>
-
-                <Col sm={2}  smOffset={8} style={{textAlign :'right', margin : '0px', padding : '0px', width : '100%'}}>
-                    <ButtonGroup>
-                            <Button bsStyle={this.state.allbtnstyle} bsSize="xs" onClick={ () => self.fntoggle()}>All Events</Button>
-                            <Button bsStyle={this.state.otherbtnstyle} bsSize="xs" onClick={ () => self.fntoggle()}>Based on Interests</Button>
-                    </ButtonGroup>                
+        <Grid style={{margin : '0px', padding : '0px', width : '100%'}}>
+            <Row style={{margin : '0px', padding : '0px 10px', width : '100%'}}>
+                <Col sm={2} smOffset={10} style={{textAlign :'right', margin : '0px', padding : '0px', width : '100%'}}>
+                <ButtonGroup>
+                        <Button bsStyle={this.state.allbtnstyle} bsSize="xs" onClick={ () => self.fntoggle()}>All Events</Button>
+                        <Button bsStyle={this.state.otherbtnstyle} bsSize="xs" onClick={ () => self.fntoggle()}>Based on Interests</Button>
+                </ButtonGroup>                
+                </Col>
+            </Row>
+        </Grid>
+            <br/>
+        <Grid fluid={true}>
+            <Row style={styleobj.nav_style}>
+                <Col sm={3} md={2} >
+                    <div style={{ fontSize: '18px', padding: '5px'}}>
+                        {"Technology"}
+                    </div>
+                    <select onChange={this.onTechChange.bind(this)} className="form-control" name="tech">
+                            {this.state.technology_list.map((option,index) => {
+                                    return (<option value={option.name} key={index} >{option.name}</option>)
+                            })}
+                    </select>            
+                </Col>
+                <Col md={8} sm={6} style={{textAlign: 'center'}}>               
+                    <ButtonGroup style={{ marginLeft: '5%', textAlign: 'center'}}>
+                        <ButtonGroup>
+                            {this.state.category_list.map((category,index) => {
+                                return (
+                                    <Button key={'btn' + index} onClick={() => this.handleClick(category)}
+                                    >{category}</Button> 
+                                )
+                            })}
+                        </ButtonGroup>
+                    </ButtonGroup>
                 </Col>
 
-            </Row>
-
-            <Row style={{margin : '0px', padding : '10px', width : '100%', backgroundColor : '#f2f2f2'}}>
-
                 <Col sm={3} md={2}>
-                    <div style={{ fontSize: '15px', padding: '5px'}}>{"Location"}</div>
-
+                    <div style={{ fontSize: '18px', padding: '5px', textAlign: 'right'}}>
+                        {"Location"}
+                    </div>
                     <select value={this.state.location} onChange={this.onLocChange.bind(this)} className="form-control" name="city">
                             {location_options.map(option => {
                                                 return <option value={option} key={option} >{option}</option>
                             })}
                     </select>
                 </Col>
-
-                <Col md={8} sm={6} style={{textAlign: 'center'}}>
-                    <ButtonGroup style={{ marginLeft: '5%', textAlign: 'center'}}>
-                            <ButtonGroup>
-                                {category_list.map((category,index) => {
-                                    return (
-                                        <Button key={'btn' + index} onClick={() => this.handleClick(category)}
-                                        >{category}</Button> 
-                                    )
-                                })}
-                            </ButtonGroup>
-                        </ButtonGroup>    
-                </Col>
-
-                <Col sm={3} md={2}>
-                    <div style={{ fontSize: '18px', padding: '5px'}}>
-                    {"Technology"}
-                    </div>
-                    <select onChange={this.onTechChange.bind(this)} className="form-control" name="tech">
-                            {this.state.technology_list.map((option,index) => {
-                                    return (<option value={option} key={index + option} >{option}</option>)
-                            })}
-                    </select>
-                </Col>
-
             </Row>
-
         </Grid>
         <br/>
         <Grid fluid>
@@ -366,10 +282,16 @@ class BrowseEvents extends React.Component{
                 {filtered_eventlist.map(function(events,index){
                         return(
                             <Col sm={6} md={4} lg={3} key={'eventKey' + index} style={styleobj.style_event}>
+                                <span>
                                     <Events ename={events.event_name}
-                                    edesc={events.description}
-                                    edate={events.start_date_time}
-                                    eloc={events.location} />
+                                        edesc={events.description}
+                                        eurl={events.event_url}
+                                        edate={events.start_date_time}
+                                        eimgsrc={events.image_url}
+                                        eloc={events.location}
+                                        eid={events.id}
+                                        ebtn={true} />
+                                </span>
                             </Col>                                
                         )
                     }

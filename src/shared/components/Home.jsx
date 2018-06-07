@@ -39,6 +39,7 @@ class Home extends React.Component{
                             events: [],
                             event_locations: [],
                             event_categories: [],
+                            loggedin : false
                         };
 
         this.loadLocations = this.loadLocations.bind(this);
@@ -57,7 +58,9 @@ class Home extends React.Component{
     
     // Register with App store on component mount
     componentDidMount() {
-        AppStore.addChangeListener(this._onChange);
+        //AppStore.addChangeListener(this._onChange);
+        this.state.loggedin = AppStore.isAuthenticated();
+        this.setState(this.state);
         
         // load categories & technologies
         this.loadcategories();
@@ -69,7 +72,7 @@ class Home extends React.Component{
 
     //De-Register with App store on component unmount
 	componentWillUnmount(){
-		AppStore.removeChangeListener(this._onChange);
+		//AppStore.removeChangeListener(this._onChange);
     }
 
     // Function to handle the change event from the store
@@ -87,9 +90,10 @@ class Home extends React.Component{
         if(category_obj_list){
             category_obj_list.map( category_obj => {category_list.push(category_obj.name)});
         }
+    /*
         // Hardcoding till API gets functional
         category_list = [ 'All','Webex', 'Seminars', 'Meetings', 'Workshops'  ];
-
+*/
         this.state.category_list = category_list;
         this.setState(this.state);
     }
@@ -113,7 +117,8 @@ class Home extends React.Component{
 
         var technology_list = [];        
         var technology_list = AppStore._getTechnologies();
-     
+        log("technology list is : " + JSON.stringify(technology_list), DEBUG);
+/*     
         // Hardcoging till the API gets functional
         var tech_list = [
             'All',
@@ -124,6 +129,7 @@ class Home extends React.Component{
             'football'
         ]
         var technology_list = [...(tech_list)];
+*/        
       
         this.setState({technology_list: technology_list});
         //log(JSON.stringify(this.state.technology_list), INFO);
@@ -208,7 +214,7 @@ class Home extends React.Component{
             </div>
             <select onChange={this.onTechChange.bind(this)} className="form-control" name="tech">
                     {this.state.technology_list.map((option,index) => {
-                            return (<option value={option} key={index + option} >{option}</option>)
+                            return (<option value={option.name} key={index} >{option.name}</option>)
                     })}
             </select>            
         </Col>
@@ -241,12 +247,15 @@ class Home extends React.Component{
         {filtered_eventlist.map(function(events,index){
                 return(
                     <Col sm={6} md={4} lg={3} key={'eventKey' + index} style={styleobj.style_event}>
-                        <span style={{ cursor :'pointer'}}
-                              onClick={ ()=> {self.props.history.push('/eventdetails/' + events.id)}}>                    
+                        <span>                    
                             <Events ename={events.event_name}
                                 edesc={events.description}
+                                eurl={events.event_url}
                                 edate={events.start_date_time}
-                                eloc={events.location} />
+                                eimgsrc={events.image_url}
+                                eloc={events.location}
+                                eid={events.id}
+                                ebtn={self.state.loggedin}  />
                         </span>
                     </Col>                                
                 )
