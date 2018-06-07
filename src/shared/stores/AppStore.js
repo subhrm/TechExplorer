@@ -17,6 +17,7 @@ var _events = [];
 var _alltechnologies = null;
 var _allcategories = null;
 var _userobj = null;
+var _allevents = null;
 
 var AppStore = objectAssign({}, BaseStore, {
 
@@ -44,6 +45,14 @@ var AppStore = objectAssign({}, BaseStore, {
 
     _getEvents:function(){
         return _events;
+    },
+
+    _getAllEvents:function(){
+        if(_allevents){
+            return (_allevents);
+        }else{
+            return(FetchAllEvents());
+        }
     },
 
     _getTechnologies:function(){
@@ -324,13 +333,28 @@ function SaveProfile(userobj){
 }
 
 // Function to retrieve events
+function FetchAllEvents(){
+    log("Inside fn-FetchAllEvents",DEBUG);
+    // DEPENDENCY
+    //  adding /events in SPEC to fetch initial list of events, categories, and technology from Server 
+    var data=AjaxHelper.getallevents("/events/list-all-events","");
+    log("returned from Ajax Helper : FetchAllEvents", DEBUG);
+    //log(JSON.stringify(data), DEBUG);
+    if(data){
+        // log("Events : " + JSON.stringify(data), INFO);
+        _allevents = data;
+        return _allevents;
+    }
+}
+
+// Function to retrieve events
 function FetchEvents(){
     log("Inside fn-FetchEvents",DEBUG);
     // DEPENDENCY
     //  adding /events in SPEC to fetch initial list of events, categories, and technology from Server 
     var data=AjaxHelper.getallevents("/events/list-all-events","");
-    log("returned from Ajax Helper", DEBUG);
-    log(JSON.stringify(data), DEBUG);
+    log("returned from Ajax Helper : FetchEvents", DEBUG);
+    //log(JSON.stringify(data), DEBUG);
     if(data){
         // log("Events : " + JSON.stringify(data), INFO);
         _events = data;

@@ -12,71 +12,6 @@ var log = logmodule.log;
 const INFO = logmodule.INFO_LOG;
 const DEBUG = logmodule.DEBUG_LOG;
 
-
-var event_list = [
-    {
-        name: "Event1",
-        desc: "Good Event for Tech",
-        category: "Webex",
-        subcategory: "IOT",
-        date: "01/06/2018",
-        location: 'Hyderabad'
-    },
-    {
-        name: "Event2",
-        desc: "Good Event for Tech",
-        category: "Seminars",
-        subcategory: "AI/ML",
-        date: "05/06/2018",
-        location: 'Hyderabad'
-    },
-    {
-        name: "Event3",
-        desc: "Good Event for Tech",
-        category: "Webex",
-        subcategory: "Blockchain",
-        date: "01/07/2018",
-        location: 'Bangalore'
-    },
-    {
-        name: "Event4",
-        desc: "Good Event for Tech",
-        category: "Workshops",
-        subcategory: "Cloud",
-        date: "01/08/2018",
-        location: 'Pune'
-    },
-    {
-        name: "Event5",
-        desc: "Good Event for Tech",
-        category: "Meetings",
-        subcategory: "Cloud",
-        date: "01/07/2018",
-        location: 'Bangalore'
-    },
-    {
-        name: "Event6",
-        desc: "Good Event for Tech",
-        category: "Seminars",
-        subcategory: "Blockchain",
-        date: "01/08/2018",
-        location: 'Pune'
-    }
-]
-
-var category_list = [
-    'All','Webex', 'Seminars', 'Meetings', 'Workshops'
-]
-
-var tech_list = [
-    {id: 9999, name: 'All'},
-    {id: 1002, name: 'IOT'},
-    {id: 1003, name: 'Blockchain'},
-    {id: 1004, name: 'Cloud'},
-    {id: 1005, name: 'AI/ML'},
-    {id: 1006, name: 'football'}
-]
-
 const styleobj = {
     style_event : {
              padding: '10px'
@@ -93,13 +28,13 @@ const styleobj = {
 };
 
 class Home extends React.Component{
-
     constructor(props){
         super(props);
         this.state =    {
                             location: 'All',
                             category: 'All',
                             technology: 'All',
+                            category_list:[],
                             technology_list: [],
                             events: [],
                             event_locations: [],
@@ -109,6 +44,7 @@ class Home extends React.Component{
         this.loadLocations = this.loadLocations.bind(this);
         this.onLocChange = this.onLocChange.bind(this);
         this.loadtechnologies = this.loadtechnologies.bind(this);
+        this.loadcategories = this.loadcategories.bind(this);
         this.onTechChange = this.onTechChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
         this._onChange = this._onChange.bind(this);
@@ -116,42 +52,51 @@ class Home extends React.Component{
 
     // Retrieve list of events for initial render
     componentWillMount() {
-        AppStore.addChangeListener(this._onChange);
-        Actions.FetchEvents();
+        this.state.events = AppStore._getAllEvents();
     }
+    
     // Register with App store on component mount
     componentDidMount() {
         AppStore.addChangeListener(this._onChange);
-
-        Actions.GetCategories();
-        Actions.GetTechnologies();
+        
+        // load categories & technologies
+        this.loadcategories();
+        this.loadtechnologies();        
 
         // Function to locations of events available
-        this.loadLocations();
-        // load categories
-        this.loadtechnologies();
+        this.loadLocations();        
     }
 
     //De-Register with App store on component unmount
 	componentWillUnmount(){
 		AppStore.removeChangeListener(this._onChange);
     }
-    
+
     // Function to handle the change event from the store
 	_onChange(){
 		log("Home Component received change event from App store", DEBUG);
 
-        this.state.events = AppStore._getEvents();
+        this.state.events = AppStore._getAllEvents();
         this.setState(this.state);
-        log("Updated this.state.events: " + JSON.stringify(this.state.events['future_events']),DEBUG);
-	} 
+        //log("Updated this.state.events: " + JSON.stringify(this.state.events['future_events']),DEBUG);
+	}     
+
+    loadcategories(){        
+        var category_list = [];        
+        var category_obj_list = AppStore._getCategories();
+        if(category_obj_list){
+            category_obj_list.map( category_obj => {category_list.push(category_obj.name)});
+        }
+        // Hardcoding till API gets functional
+        category_list = [ 'All','Webex', 'Seminars', 'Meetings', 'Workshops'  ];
+
+        this.state.category_list = category_list;
+        this.setState(this.state);
+    }
 
     //Function to extract list of locations from event list
     loadLocations() {
         var temp_arr = [];
-        /*event_list.map(function(event) {
-            temp_arr.push(event.location)
-        });*/
         // Returning list of events from the Store
         var all_events = this.state.events['future_events'];
                 all_events.map(function(event) {
@@ -160,20 +105,28 @@ class Home extends React.Component{
         
         var temp_location = new Set(temp_arr);
         temp_arr = ['All',...temp_location];
-        log("Locations of all events: " + JSON.stringify(temp_arr), DEBUG);
+        //log("Locations of all events: " + JSON.stringify(temp_arr), DEBUG);
         this.setState({event_locations: temp_arr});
     }
 
     loadtechnologies() {
-        var tp_arr = [];
-        /*
-        tech_list.forEach(function(tech) {    
-            tp_arr.push(tech.name);
-        })*/
-        tp_arr = [...(tech_list)];
-        console.log(tp_arr);        
-        this.setState({technology_list: tp_arr});
-        console.log(this.state.technology_list);
+
+        var technology_list = [];        
+        var technology_list = AppStore._getTechnologies();
+     
+        // Hardcoging till the API gets functional
+        var tech_list = [
+            {id: 9999, name: 'All'},
+            {id: 1002, name: 'IOT'},
+            {id: 1003, name: 'Blockchain'},
+            {id: 1004, name: 'Cloud'},
+            {id: 1005, name: 'AI/ML'},
+            {id: 1006, name: 'football'}
+        ]
+        var technology_list = [...(tech_list)];
+      
+        this.setState({technology_list: technology_list});
+        //log(JSON.stringify(this.state.technology_list), INFO);
     }
 
     // Function to set the LOCATION criteria to fetch specified events
@@ -191,7 +144,7 @@ class Home extends React.Component{
         this.setState({
             technology : e.target.value  
         });
-        console.log(this.state.technology);
+        log(this.state.technology, DEBUG);
         // Actions.FetchEventsByTech(this.state.technology);
     }
 
@@ -200,14 +153,16 @@ class Home extends React.Component{
         this.setState({
             category: value
         })
-        console.log(this.state.category)
+        log(this.state.category, DEBUG);
     }
 
     render(){
+        var self = this;
+
         var location_options = this.state.event_locations;
         var location = this.state.location;
         var tech = this.state.technology;
-        log("Tech value: " + JSON.stringify(this.state.technology), DEBUG);
+        //log("Tech value: " + JSON.stringify(this.state.technology), DEBUG);
         var cat = this.state.category;
         var all_events = this.state.events;
         var location_filtered_events = [];
@@ -217,40 +172,37 @@ class Home extends React.Component{
         //Filtering by location
         if(location == 'All') {
             location_filtered_events = all_events.future_events; //this.state.events;
-            log("Filtered events by location, option = All: " + JSON.stringify(location_filtered_events),DEBUG);
+            //log("Filtered events by location, option = All: " + JSON.stringify(location_filtered_events),DEBUG);
         } else {
             location_filtered_events = all_events.future_events.filter(ev => ev.location == location);
-            log("Filtered events by location, option = " + location + " : " + JSON.stringify(location_filtered_events),DEBUG);
+            //log("Filtered events by location, option = " + location + " : " + JSON.stringify(location_filtered_events),DEBUG);
         }
 
         
         //Filtering by Category
         if(cat == 'All') {
             category_filtered_events = location_filtered_events; //this.state.category;
-            log("Filtered events by location & category, option = All: " + JSON.stringify(category_filtered_events),DEBUG);
+            //log("Filtered events by location & category, option = All: " + JSON.stringify(category_filtered_events),DEBUG);
         } else {
             category_filtered_events = location_filtered_events.filter(ev => ev.category == cat);
-            log("Filtered events by location & category, option = " + location + " : " + JSON.stringify(category_filtered_events),DEBUG);
+            //log("Filtered events by location & category, option = " + location + " : " + JSON.stringify(category_filtered_events),DEBUG);
         }
         
 
         //Filtering events by technology
         if(tech == 'All') {
             filtered_eventlist = category_filtered_events; //this.state.technology;
-            log("Filtered events, option = All: " + JSON.stringify(filtered_eventlist),DEBUG);
+            //log("Filtered events, option = All: " + JSON.stringify(filtered_eventlist),DEBUG);
         } else {
             filtered_eventlist = category_filtered_events.filter(ev => ev.technology == tech);
-            log("Filtered events, option = " + location + " : " + JSON.stringify(filtered_eventlist),DEBUG);
+            //log("Filtered events, option = " + location + " : " + JSON.stringify(filtered_eventlist),DEBUG);
         }
 
         return(
             <div id="div_home">
 <Grid fluid={true}>
-
     <Row style={styleobj.nav_style}>
-
         <Col sm={3} md={2} >
-
             <div style={{ fontSize: '18px', padding: '5px'}}>
                 {"Technology"}
             </div>
@@ -258,15 +210,13 @@ class Home extends React.Component{
                     {this.state.technology_list.map((option,index) => {
                             return (<option value={option.name} key={index + option.name} >{option.name}</option>)
                     })}
-            </select>
-            
+            </select>            
         </Col>
 
-        <Col md={8} sm={6} style={{textAlign: 'center'}}>
-               
-        <ButtonGroup style={{ marginLeft: '5%', textAlign: 'center'}}>
+        <Col md={8} sm={6} style={{textAlign: 'center'}}>               
+            <ButtonGroup style={{ marginLeft: '5%', textAlign: 'center'}}>
                 <ButtonGroup>
-                    {category_list.map((category,index) => {
+                    {this.state.category_list.map((category,index) => {
                         return (
                             <Button key={'btn' + index} onClick={() => this.handleClick(category)}
                             >{category}</Button> 
@@ -274,11 +224,9 @@ class Home extends React.Component{
                     })}
                 </ButtonGroup>
             </ButtonGroup>
-        
         </Col>
 
         <Col sm={3} md={2}>
-            
             <div style={{ fontSize: '18px', padding: '5px', textAlign: 'right'}}>
                 {"Location"}
             </div>
@@ -287,24 +235,23 @@ class Home extends React.Component{
                                         return <option value={option} key={option} >{option}</option>
                     })}
             </select>
-
         </Col>
-
     </Row>
     <Row style={{padding: '5px'}}>
-    
         {filtered_eventlist.map(function(events,index){
                 return(
                     <Col sm={6} md={4} lg={3} key={'eventKey' + index} style={styleobj.style_event}>
+                        <span style={{ cursor :'pointer'}}
+                              onClick={ ()=> {self.props.history.push('/eventdetails/' + events.id)}}>                    
                             <Events ename={events.event_name}
-                            edesc={events.description}
-                            edate={events.start_date_time}
-                            eloc={events.location} />
+                                edesc={events.description}
+                                edate={events.start_date_time}
+                                eloc={events.location} />
+                        </span>
                     </Col>                                
                 )
             }
-        )}
-                    
+        )}                    
     </Row>
 </Grid>
             </div>
